@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.job.lite.internal.config;
 
+import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.lite.internal.listener.AbstractJobListener;
 import com.dangdang.ddframe.job.lite.internal.listener.AbstractListenerManager;
 import com.dangdang.ddframe.job.lite.internal.schedule.JobRegistry;
@@ -51,7 +52,8 @@ public final class RescheduleListenerManager extends AbstractListenerManager {
         @Override
         protected void dataChanged(final String path, final Type eventType, final String data) {
             if (configNode.isConfigPath(path) && Type.NODE_UPDATED == eventType && !JobRegistry.getInstance().isShutdown(jobName)) {
-                JobRegistry.getInstance().getJobScheduleController(jobName).rescheduleJob(LiteJobConfigurationGsonFactory.fromJson(data).getTypeConfig().getCoreConfig().getCron());
+                JobCoreConfiguration coreConfiguration = LiteJobConfigurationGsonFactory.fromJson(data).getTypeConfig().getCoreConfig();
+                JobRegistry.getInstance().getJobScheduleController(jobName).rescheduleJob(coreConfiguration.getCron(), coreConfiguration.getTimezone());
             }
         }
     }

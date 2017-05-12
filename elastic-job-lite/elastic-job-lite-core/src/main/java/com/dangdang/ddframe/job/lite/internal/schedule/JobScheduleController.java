@@ -28,6 +28,8 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 
+import java.util.TimeZone;
+
 /**
  * 作业调度控制器.
  * 
@@ -47,35 +49,45 @@ public final class JobScheduleController {
      * 
      * @param cron CRON表达式
      */
-    public void scheduleJob(final String cron) {
+    public void scheduleJob(final String cron, final String timezone) {
         try {
             if (!scheduler.checkExists(jobDetail.getKey())) {
-                scheduler.scheduleJob(jobDetail, createTrigger(cron));
+                scheduler.scheduleJob(jobDetail, createTrigger(cron, timezone));
             }
             scheduler.start();
         } catch (final SchedulerException ex) {
             throw new JobSystemException(ex);
         }
     }
-    
+
+    /**
+     * 重新调度作业.
+     *
+     * @param cron CRON表达式
+     */
+    public void rescheduleJob(final String cron) {
+       rescheduleJob(cron, TimeZone.getDefault().getDisplayName());
+    }
+
     /**
      * 重新调度作业.
      * 
      * @param cron CRON表达式
      */
-    public void rescheduleJob(final String cron) {
+    public void rescheduleJob(final String cron, final String timezone) {
         try {
             CronTrigger trigger = (CronTrigger) scheduler.getTrigger(TriggerKey.triggerKey(triggerIdentity));
             if (!scheduler.isShutdown() && null != trigger && !cron.equals(trigger.getCronExpression())) {
-                scheduler.rescheduleJob(TriggerKey.triggerKey(triggerIdentity), createTrigger(cron));
+                scheduler.rescheduleJob(TriggerKey.triggerKey(triggerIdentity), createTrigger(cron, timezone));
             }
         } catch (final SchedulerException ex) {
             throw new JobSystemException(ex);
         }
     }
     
-    private CronTrigger createTrigger(final String cron) {
-        return TriggerBuilder.newTrigger().withIdentity(triggerIdentity).withSchedule(CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing()).build();
+    private CronTrigger createTrigger(final String cron, final String timezone) {
+        TimeZone tz = TimeZone.getTimeZone(timezone);
+        return TriggerBuilder.newTrigger().withIdentity(triggerIdentity).withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(tz).withMisfireHandlingInstructionDoNothing()).build();
     }
     
     /**

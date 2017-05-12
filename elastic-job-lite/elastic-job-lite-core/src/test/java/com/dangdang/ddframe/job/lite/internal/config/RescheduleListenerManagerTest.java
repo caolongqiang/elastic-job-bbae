@@ -43,7 +43,7 @@ public final class RescheduleListenerManagerTest {
     
     @Mock
     private JobNodeStorage jobNodeStorage;
-    
+
     @Mock
     private JobScheduleController jobScheduleController;
     
