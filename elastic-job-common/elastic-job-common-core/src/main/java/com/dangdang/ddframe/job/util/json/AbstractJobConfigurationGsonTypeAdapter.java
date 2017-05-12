@@ -49,6 +49,7 @@ public abstract class AbstractJobConfigurationGsonTypeAdapter<T extends JobRootC
     public T read(final JsonReader in) throws IOException {
         String jobName = "";
         String cron = "";
+        String timezone = "";
         int shardingTotalCount = 0;
         String shardingItemParameters = "";
         String jobParameter = "";
@@ -70,6 +71,9 @@ public abstract class AbstractJobConfigurationGsonTypeAdapter<T extends JobRootC
                     break;
                 case "cron":
                     cron = in.nextString();
+                    break;
+                case "timezone":
+                    timezone = in.nextString();
                     break;
                 case "shardingTotalCount":
                     shardingTotalCount = in.nextInt();
@@ -110,7 +114,7 @@ public abstract class AbstractJobConfigurationGsonTypeAdapter<T extends JobRootC
             }
         }
         in.endObject();
-        JobCoreConfiguration coreConfig = getJobCoreConfiguration(jobName, cron, shardingTotalCount, shardingItemParameters,
+        JobCoreConfiguration coreConfig = getJobCoreConfiguration(jobName, cron, timezone, shardingTotalCount, shardingItemParameters,
                 jobParameter, failover, misfire, description, jobProperties);
         JobTypeConfiguration typeConfig = getJobTypeConfiguration(coreConfig, jobType, jobClass, streamingProcess, scriptCommandLine);
         return getJobRootConfiguration(typeConfig, customizedValueMap);
@@ -137,11 +141,11 @@ public abstract class AbstractJobConfigurationGsonTypeAdapter<T extends JobRootC
     
     protected abstract void addToCustomizedValueMap(final String jsonName, final JsonReader in, final Map<String, Object> customizedValueMap) throws IOException;
     
-    private JobCoreConfiguration getJobCoreConfiguration(final String jobName, final String cron, final int shardingTotalCount,
+    private JobCoreConfiguration getJobCoreConfiguration(final String jobName, final String cron, final String timezone, final int shardingTotalCount,
                                                          final String shardingItemParameters, final String jobParameter, final boolean failover,
                                                          final boolean misfire, final String description,
                                                          final JobProperties jobProperties) {
-        return JobCoreConfiguration.newBuilder(jobName, cron, shardingTotalCount)
+        return JobCoreConfiguration.newBuilder(jobName, cron, timezone, shardingTotalCount)
                 .shardingItemParameters(shardingItemParameters).jobParameter(jobParameter).failover(failover).misfire(misfire).description(description)
                 .jobProperties(JobProperties.JobPropertiesEnum.JOB_EXCEPTION_HANDLER.getKey(), jobProperties.get(JobProperties.JobPropertiesEnum.JOB_EXCEPTION_HANDLER))
                 .jobProperties(JobProperties.JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER.getKey(), jobProperties.get(JobProperties.JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER))
@@ -174,6 +178,7 @@ public abstract class AbstractJobConfigurationGsonTypeAdapter<T extends JobRootC
         out.name("jobClass").value(value.getTypeConfig().getJobClass());
         out.name("jobType").value(value.getTypeConfig().getJobType().name());
         out.name("cron").value(value.getTypeConfig().getCoreConfig().getCron());
+        out.name("timezone").value(value.getTypeConfig().getCoreConfig().getTimezone());
         out.name("shardingTotalCount").value(value.getTypeConfig().getCoreConfig().getShardingTotalCount());
         out.name("shardingItemParameters").value(value.getTypeConfig().getCoreConfig().getShardingItemParameters());
         out.name("jobParameter").value(value.getTypeConfig().getCoreConfig().getJobParameter());

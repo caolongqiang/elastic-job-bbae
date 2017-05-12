@@ -66,14 +66,14 @@ Elastic-Job-Lite and Elastic-Job-Cloud provide unified API. Developers only need
 ```xml
 <!-- import elastic-job lite core -->
 <dependency>
-    <groupId>com.dangdang</groupId>
+    <groupId>com.bbae</groupId>
     <artifactId>elastic-job-lite-core</artifactId>
     <version>${lasted.release.version}</version>
 </dependency>
 
 <!-- import other module if need -->
 <dependency>
-    <groupId>com.dangdang</groupId>
+    <groupId>com.bbae</groupId>
     <artifactId>elastic-job-lite-spring</artifactId>
     <version>${lasted.release.version}</version>
 </dependency>
@@ -133,7 +133,7 @@ public class MyElasticJob implements SimpleJob {
 ```xml
 <!-- import elastic-job cloud executor -->
 <dependency>
-    <groupId>com.dangdang</groupId>
+    <groupId>com.bbae</groupId>
     <artifactId>elastic-job-cloud-executor</artifactId>
     <version>${lasted.release.version}</version>
 </dependency>

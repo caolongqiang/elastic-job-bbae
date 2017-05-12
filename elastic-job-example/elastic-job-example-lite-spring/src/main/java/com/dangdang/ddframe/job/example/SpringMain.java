@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.job.example;
 
+
+import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public final class SpringMain {
@@ -27,5 +29,6 @@ public final class SpringMain {
     // CHECKSTYLE:ON
 
         new ClassPathXmlApplicationContext("classpath:META-INF/applicationContext.xml");
+        JobCoreConfiguration j  = null;
     }
 }

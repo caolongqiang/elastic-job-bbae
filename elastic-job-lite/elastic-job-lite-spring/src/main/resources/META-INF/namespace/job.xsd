@@ -30,6 +30,7 @@
                 <xsd:attribute name="class" type="xsd:string" />
                 <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
                 <xsd:attribute name="cron" type="xsd:string" use="required" />
+                <xsd:attribute name="timezone" type="xsd:string" default="Asia/Shanghai"/>
                 <xsd:attribute name="sharding-total-count" type="xsd:string" use="required" />
                 <xsd:attribute name="sharding-item-parameters" type="xsd:string" />
                 <xsd:attribute name="job-parameter" type="xsd:string" />
@@ -46,7 +47,7 @@
                 <xsd:attribute name="executor-service-handler" type="xsd:string" default="com.dangdang.ddframe.job.executor.handler.impl.DefaultExecutorServiceHandler"/>
                 <xsd:attribute name="job-exception-handler" type="xsd:string" default="com.dangdang.ddframe.job.executor.handler.impl.DefaultJobExceptionHandler"/>
                 <xsd:attribute name="event-trace-rdb-data-source" type="xsd:string" />
-                <xsd:attribute name="timezone" type="xsd:string" default="Asia/Shanghai"/>
+
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

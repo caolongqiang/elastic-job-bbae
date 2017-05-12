@@ -59,14 +59,14 @@ elastic-job已经发布到中央仓库，可以在pom.xml文件中直接引入ma
 ```xml
 <!-- 引入elastic-job核心模块 -->
 <dependency>
-    <groupId>com.dangdang</groupId>
+    <groupId>com.bbae</groupId>
     <artifactId>elastic-job-core</artifactId>
     <version>${lasted.release.version}</version>
 </dependency>
 
 <!-- 使用springframework自定义命名空间时引入 -->
 <dependency>
-    <groupId>com.dangdang</groupId>
+    <groupId>com.bbae</groupId>
     <artifactId>elastic-job-spring</artifactId>
     <version>${lasted.release.version}</version>
 </dependency>

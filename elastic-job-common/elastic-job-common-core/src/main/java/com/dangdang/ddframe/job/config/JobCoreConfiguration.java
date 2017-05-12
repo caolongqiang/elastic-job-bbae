@@ -29,7 +29,6 @@ import lombok.Getter;
  * 
  * @author zhangliang
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class JobCoreConfiguration {
     
@@ -52,7 +51,20 @@ public final class JobCoreConfiguration {
     private final String description;
     
     private final JobProperties jobProperties;
-    
+
+    public JobCoreConfiguration(String jobName, String cron, String timezone, int shardingTotalCount, String shardingItemParameters, String jobParameter, boolean failover, boolean misfire, String description, JobProperties jobProperties) {
+        this.jobName = jobName;
+        this.cron = cron;
+        this.timezone = timezone;
+        this.shardingTotalCount = shardingTotalCount;
+        this.shardingItemParameters = shardingItemParameters;
+        this.jobParameter = jobParameter;
+        this.failover = failover;
+        this.misfire = misfire;
+        this.description = description;
+        this.jobProperties = jobProperties;
+    }
+
     /**
      * 创建简单作业配置构建器.
      *

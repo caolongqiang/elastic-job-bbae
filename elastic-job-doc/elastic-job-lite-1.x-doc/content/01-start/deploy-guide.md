@@ -24,14 +24,14 @@ next = "/02-guide/index/"
 ```xml
 <!-- 引入elastic-job核心模块 -->
 <dependency>
-    <groupId>com.dangdang</groupId>
+    <groupId>com.bbae</groupId>
     <artifactId>elastic-job-core</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 
 <!-- 使用springframework自定义命名空间时引入 -->
 <dependency>
-    <groupId>com.dangdang</groupId>
+    <groupId>com.bbae</groupId>
     <artifactId>elastic-job-spring</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
