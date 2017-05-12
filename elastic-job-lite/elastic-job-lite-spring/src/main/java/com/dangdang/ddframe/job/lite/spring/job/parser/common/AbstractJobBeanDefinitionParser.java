@@ -59,6 +59,7 @@ import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBean
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.REGISTRY_CENTER_REF_ATTRIBUTE;
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.SHARDING_ITEM_PARAMETERS_ATTRIBUTE;
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.SHARDING_TOTAL_COUNT_ATTRIBUTE;
+import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.TIMEZONE;
 
 /**
  * 基本作业的命名空间解析器.
@@ -103,6 +104,7 @@ public abstract class AbstractJobBeanDefinitionParser extends AbstractBeanDefini
         result.addConstructorArgValue(element.getAttribute(RECONCILE_INTERVAL_MINUTES));
         result.addConstructorArgValue(element.getAttribute(DISABLED_ATTRIBUTE));
         result.addConstructorArgValue(element.getAttribute(OVERWRITE_ATTRIBUTE));
+
         return result.getBeanDefinition();
     }
     
@@ -110,6 +112,7 @@ public abstract class AbstractJobBeanDefinitionParser extends AbstractBeanDefini
         BeanDefinitionBuilder jobCoreBeanDefinitionBuilder = BeanDefinitionBuilder.rootBeanDefinition(JobCoreConfiguration.class);
         jobCoreBeanDefinitionBuilder.addConstructorArgValue(element.getAttribute(ID_ATTRIBUTE));
         jobCoreBeanDefinitionBuilder.addConstructorArgValue(element.getAttribute(CRON_ATTRIBUTE));
+        jobCoreBeanDefinitionBuilder.addConstructorArgValue(element.getAttribute(TIMEZONE));
         jobCoreBeanDefinitionBuilder.addConstructorArgValue(element.getAttribute(SHARDING_TOTAL_COUNT_ATTRIBUTE));
         jobCoreBeanDefinitionBuilder.addConstructorArgValue(element.getAttribute(SHARDING_ITEM_PARAMETERS_ATTRIBUTE));
         jobCoreBeanDefinitionBuilder.addConstructorArgValue(element.getAttribute(JOB_PARAMETER_ATTRIBUTE));

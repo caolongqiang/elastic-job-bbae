@@ -23,7 +23,6 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 作业核心配置.
@@ -37,7 +36,9 @@ public final class JobCoreConfiguration {
     private final String jobName;
     
     private final String cron;
-    
+
+    private final String timezone;
+
     private final int shardingTotalCount;
     
     private final String shardingItemParameters;
@@ -60,19 +61,46 @@ public final class JobCoreConfiguration {
      * @param shardingTotalCount 作业分片总数
      * @return 简单作业配置构建器
      */
+    public static Builder newBuilder(final String jobName, final String cron, final String timezone, final int shardingTotalCount) {
+        return new Builder(jobName, cron, timezone, shardingTotalCount);
+    }
+
+    /**
+     * 创建简单作业配置构建器.
+     *
+     * @param jobName 作业名称
+     * @param cron 作业启动时间的cron表达式
+     * @param shardingTotalCount 作业分片总数
+     * @return 简单作业配置构建器
+     */
     public static Builder newBuilder(final String jobName, final String cron, final int shardingTotalCount) {
         return new Builder(jobName, cron, shardingTotalCount);
     }
-    
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+
     public static class Builder {
         
         private final String jobName;
         
         private final String cron;
-        
+
+        private String timezone;
+
         private final int shardingTotalCount;
-        
+
+        public Builder(String jobName, String cron, int shardingTotalCount) {
+            this.jobName = jobName;
+            this.cron = cron;
+            this.timezone = "Asia/Shanghai";
+            this.shardingTotalCount = shardingTotalCount;
+        }
+
+        public Builder(String jobName, String cron, String timezone, int shardingTotalCount) {
+            this.jobName = jobName;
+            this.cron = cron;
+            this.timezone = timezone;
+            this.shardingTotalCount = shardingTotalCount;
+        }
+
         private String shardingItemParameters = "";
         
         private String jobParameter = "";
@@ -178,6 +206,7 @@ public final class JobCoreConfiguration {
             jobProperties.put(key, value);
             return this;
         }
+
         
         /**
          * 构建作业配置对象.
@@ -188,7 +217,7 @@ public final class JobCoreConfiguration {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(jobName), "jobName can not be empty.");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(cron), "cron can not be empty.");
             Preconditions.checkArgument(shardingTotalCount > 0, "shardingTotalCount should larger than zero.");
-            return new JobCoreConfiguration(jobName, cron, shardingTotalCount, shardingItemParameters, jobParameter, failover, misfire, description, jobProperties);
+            return new JobCoreConfiguration(jobName, cron, timezone, shardingTotalCount, shardingItemParameters, jobParameter, failover, misfire, description, jobProperties);
         }
     }
 }

@@ -20,13 +20,12 @@ package com.dangdang.ddframe.job.example;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public final class SpringMain {
-    
-    private static final int EMBED_ZOOKEEPER_PORT = 5181;
+
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
     // CHECKSTYLE:ON
-        EmbedZookeeperServer.start(EMBED_ZOOKEEPER_PORT);
+
         new ClassPathXmlApplicationContext("classpath:META-INF/applicationContext.xml");
     }
 }

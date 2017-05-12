@@ -208,6 +208,8 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             this.overwrite = overwrite;
             return this;
         }
+
+
         
         /**
          * 构建作业配置对象.
