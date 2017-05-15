@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.job.lite.lifecycle.api;
 
+import com.dangdang.ddframe.job.lite.lifecycle.domain.JobBriefInfo;
 import com.google.common.base.Optional;
 
 /**
@@ -25,7 +26,7 @@ import com.google.common.base.Optional;
  * @author zhangliang
  */
 public interface JobOperateAPI {
-    
+
     /**
      * 作业立刻执行.
      *
@@ -35,17 +36,17 @@ public interface JobOperateAPI {
      * @param serverIp 作业服务器IP地址
      */
     void trigger(Optional<String> jobName, Optional<String> serverIp);
-    
+
     /**
      * 作业禁用.
-     * 
+     *
      * <p>会重新分片.</p>
      *
      * @param jobName 作业名称
      * @param serverIp 作业服务器IP地址
      */
     void disable(Optional<String> jobName, Optional<String> serverIp);
-    
+
     /**
      * 作业启用.
      *
@@ -53,7 +54,7 @@ public interface JobOperateAPI {
      * @param serverIp 作业服务器IP地址
      */
     void enable(Optional<String> jobName, Optional<String> serverIp);
-    
+
     /**
      * 作业关闭.
      *
@@ -61,12 +62,15 @@ public interface JobOperateAPI {
      * @param serverIp 作业服务器IP地址
      */
     void shutdown(Optional<String> jobName, Optional<String> serverIp);
-    
+
     /**
      * 作业删除.
-     * 
+     *
      * @param jobName 作业名称
      * @param serverIp 作业服务器IP地址
      */
     void remove(Optional<String> jobName, Optional<String> serverIp);
+
+
+    void share(JobBriefInfo jobBriefInfo, String jobName);
 }

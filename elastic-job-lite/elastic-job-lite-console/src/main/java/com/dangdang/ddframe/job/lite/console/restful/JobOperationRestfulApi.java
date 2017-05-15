@@ -19,6 +19,7 @@ package com.dangdang.ddframe.job.lite.console.restful;
 
 import com.dangdang.ddframe.job.lite.console.service.JobAPIService;
 import com.dangdang.ddframe.job.lite.console.service.impl.JobAPIServiceImpl;
+import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.ShardingInfo;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.JobBriefInfo;
 import com.google.common.base.Optional;
@@ -62,7 +63,15 @@ public final class JobOperationRestfulApi {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<JobBriefInfo> getAllJobsBriefInfo() {
-        return jobAPIService.getJobStatisticsAPI().getAllJobsBriefInfo();
+        Collection<JobBriefInfo> jobBriefInfoCollection =  jobAPIService.getJobStatisticsAPI().getAllJobsBriefInfo();
+
+        for(JobBriefInfo jobBriefInfo : jobBriefInfoCollection){
+            if(jobBriefInfo.getStatus().compareTo(JobBriefInfo.JobStatus.SHARDING_ERROR) == 0){
+                jobAPIService.getJobOperatorAPI().share(jobBriefInfo, jobBriefInfo.getJobName());
+            }
+        }
+
+        return jobBriefInfoCollection;
     }
 
     /**
@@ -98,6 +107,14 @@ public final class JobOperationRestfulApi {
     @Consumes(MediaType.APPLICATION_JSON)
     public void enableJob(@PathParam("jobName") final String jobName) {
         jobAPIService.getJobOperatorAPI().enable(Optional.of(jobName), Optional.<String>absent());
+
+        //如果
+        JobBriefInfo jobBriefInfo = jobAPIService.getJobStatisticsAPI().getJobBriefInfo(jobName);
+        if(jobBriefInfo.getStatus().compareTo(
+            JobBriefInfo.JobStatus.SHARDING_ERROR) == 0){
+            jobAPIService.getJobOperatorAPI().share(jobBriefInfo, jobName);
+        }
+
     }
 
     /**

@@ -21,9 +21,11 @@ import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.internal.config.ConfigurationService;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.lite.lifecycle.api.JobOperateAPI;
+import com.dangdang.ddframe.job.lite.lifecycle.domain.JobBriefInfo;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -89,6 +91,7 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
                 builder.status("");
             }
             configurationService.persist(builder.build());
+
         } else if (serverIp.isPresent()) {
             List<String> jobNames = regCenter.getChildrenKeys("/");
             for (String each : jobNames) {
@@ -170,6 +173,18 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
             List<String> jobNames = regCenter.getChildrenKeys("/");
             for (String each : jobNames) {
                 regCenter.remove(new JobNodePath(each).getServerNodePath(serverIp.get()));
+            }
+        }
+    }
+
+
+    public void share(JobBriefInfo jobBriefInfo, String jobName){
+        JobNodePath jobNodePath = new JobNodePath(jobName);
+        List<String> instanceList =  regCenter.getChildrenKeys(jobNodePath.getInstancesNodePath());
+        for(int i = 0; i < jobBriefInfo.getShardingTotalCount(); i++){
+            String value = regCenter.get(jobNodePath.getShardingNodePath()+"/"+i+"/instance");
+            if(StringUtils.isBlank(value) || !instanceList.contains(value)){
+                regCenter.persist(jobNodePath.getShardingNodePath()+"/"+i+"/instance", instanceList.get(0));
             }
         }
     }

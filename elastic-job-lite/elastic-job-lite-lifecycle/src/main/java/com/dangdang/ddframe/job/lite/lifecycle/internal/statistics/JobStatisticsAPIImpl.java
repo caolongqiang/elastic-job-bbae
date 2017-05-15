@@ -40,14 +40,14 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public final class JobStatisticsAPIImpl implements JobStatisticsAPI {
-    
+
     private final CoordinatorRegistryCenter regCenter;
-    
+
     @Override
     public int getJobsTotalCount() {
         return regCenter.getChildrenKeys("/").size();
     }
-    
+
     @Override
     public Collection<JobBriefInfo> getAllJobsBriefInfo() {
         List<String> jobNames = regCenter.getChildrenKeys("/");
@@ -61,7 +61,7 @@ public final class JobStatisticsAPIImpl implements JobStatisticsAPI {
         Collections.sort(result);
         return result;
     }
-    
+
     @Override
     public JobBriefInfo getJobBriefInfo(final String jobName) {
         JobNodePath jobNodePath = new JobNodePath(jobName);
@@ -79,8 +79,8 @@ public final class JobStatisticsAPIImpl implements JobStatisticsAPI {
         result.setStatus(getJobStatus(jobName));
         return result;
     }
-    
-    private JobStatus getJobStatus(final String jobName) {
+
+    public JobStatus getJobStatus(final String jobName) {
         JobNodePath jobNodePath = new JobNodePath(jobName);
         List<String> instances = regCenter.getChildrenKeys(jobNodePath.getInstancesNodePath());
         if (instances.isEmpty()) {
@@ -105,11 +105,11 @@ public final class JobStatisticsAPIImpl implements JobStatisticsAPI {
         }
         return disabledServerCount == serversPath.size() ? JobStatus.DISABLED : JobStatus.OK;
     }
-    
+
     private int getJobInstanceCount(final String jobName) {
         return regCenter.getChildrenKeys(new JobNodePath(jobName).getInstancesNodePath()).size();
     }
-    
+
     @Override
     public Collection<JobBriefInfo> getJobsBriefInfo(final String ip) {
         List<String> jobNames = regCenter.getChildrenKeys("/");
@@ -123,7 +123,7 @@ public final class JobStatisticsAPIImpl implements JobStatisticsAPI {
         Collections.sort(result);
         return result;
     }
-    
+
     private JobBriefInfo getJobBriefInfoByJobNameAndIp(final String jobName, final String ip) {
         if (!regCenter.isExisted(new JobNodePath(jobName).getServerNodePath(ip))) {
             return null;
@@ -134,7 +134,7 @@ public final class JobStatisticsAPIImpl implements JobStatisticsAPI {
         result.setInstanceCount(getJobInstanceCountByJobNameAndIp(jobName, ip));
         return result;
     }
-    
+
     private JobStatus getJobStatusByJobNameAndIp(final String jobName, final String ip) {
         JobNodePath jobNodePath = new JobNodePath(jobName);
         String status = regCenter.get(jobNodePath.getServerNodePath(ip));
@@ -144,8 +144,8 @@ public final class JobStatisticsAPIImpl implements JobStatisticsAPI {
             return JobStatus.OK;
         }
     }
-    
-    
+
+
     private int getJobInstanceCountByJobNameAndIp(final String jobName, final String ip) {
         int instanceCount = 0;
         JobNodePath jobNodePath = new JobNodePath(jobName);
