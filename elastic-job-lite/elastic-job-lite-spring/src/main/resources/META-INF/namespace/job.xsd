@@ -6,7 +6,7 @@
         elementFormDefault="qualified"
         attributeFormDefault="unqualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans"/>
-    
+
     <xsd:element name="listener">
         <xsd:complexType>
             <xsd:attribute name="class" type="xsd:string" use="required" />
@@ -19,7 +19,7 @@
             <xsd:attribute name="completed-timeout-milliseconds" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-    
+
     <xsd:complexType name="base">
         <xsd:complexContent>
             <xsd:extension base="beans:identifiedType">
@@ -47,11 +47,12 @@
                 <xsd:attribute name="executor-service-handler" type="xsd:string" default="com.dangdang.ddframe.job.executor.handler.impl.DefaultExecutorServiceHandler"/>
                 <xsd:attribute name="job-exception-handler" type="xsd:string" default="com.dangdang.ddframe.job.executor.handler.impl.DefaultJobExceptionHandler"/>
                 <xsd:attribute name="event-trace-rdb-data-source" type="xsd:string" />
+                <xsd:attribute name="status" type="xsd:string" default="DISABLED"/>
 
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-    
+
     <xsd:element name="simple">
         <xsd:complexType>
             <xsd:complexContent>
@@ -59,7 +60,7 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
-    
+
     <xsd:element name="dataflow">
         <xsd:complexType>
             <xsd:complexContent>
@@ -69,7 +70,7 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
-    
+
     <xsd:element name="script">
         <xsd:complexType>
             <xsd:complexContent>

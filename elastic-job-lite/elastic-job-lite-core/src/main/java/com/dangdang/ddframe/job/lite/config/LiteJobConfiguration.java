@@ -23,42 +23,49 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Lite作业配置.
- * 
+ *
  * @author caohao
  * @author zhangliang
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LiteJobConfiguration implements JobRootConfiguration {
-    
+
     private final JobTypeConfiguration typeConfig;
-    
+
     private final boolean monitorExecution;
-    
+
     private final int maxTimeDiffSeconds;
-    
+
     private final int monitorPort;
-    
+
     private final String jobShardingStrategyClass;
-    
+
     private final int reconcileIntervalMinutes;
-    
+
     private final boolean disabled;
-    
+
     private final boolean overwrite;
-    
+
+    private final String status;
+
+    public boolean isForbidden(){
+        return StringUtils.equalsIgnoreCase(status, "DISABLED");
+    }
+
     /**
      * 获取作业名称.
-     * 
+     *
      * @return 作业名称
      */
     public String getJobName() {
         return typeConfig.getCoreConfig().getJobName();
     }
-    
+
     /**
      * 获取是否开启失效转移.
      *
@@ -67,36 +74,38 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
     public boolean isFailover() {
         return monitorExecution && typeConfig.getCoreConfig().isFailover();
     }
-    
+
     /**
      * 创建Lite作业配置构建器.
-     * 
+     *
      * @param jobConfig 作业配置
      * @return Lite作业配置构建器
      */
     public static Builder newBuilder(final JobTypeConfiguration jobConfig) {
         return new Builder(jobConfig);
     }
-    
+
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Builder {
-        
+
         private final JobTypeConfiguration jobConfig;
-    
+
         private boolean monitorExecution = true;
-        
+
         private int maxTimeDiffSeconds = -1;
-        
+
         private int monitorPort = -1;
-        
+
         private String jobShardingStrategyClass = "";
-        
+
         private boolean disabled;
-        
+
         private boolean overwrite;
-        
+
         private int reconcileIntervalMinutes = 10;
-    
+
+        private String status = "DISABLED";
+
         /**
          * 设置监控作业执行时状态.
          *
@@ -113,7 +122,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             this.monitorExecution = monitorExecution;
             return this;
         }
-        
+
         /**
          * 设置最大容忍的本机与注册中心的时间误差秒数.
          *
@@ -130,7 +139,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             this.maxTimeDiffSeconds = maxTimeDiffSeconds;
             return this;
         }
-        
+
         /**
          * 设置作业辅助监控端口.
          *
@@ -142,7 +151,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             this.monitorPort = monitorPort;
             return this;
         }
-        
+
         /**
          * 设置作业分片策略实现类全路径.
          *
@@ -160,7 +169,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             }
             return this;
         }
-    
+
         /**
          * 设置修复作业服务器不一致状态服务执行间隔分钟数.
          *
@@ -176,10 +185,10 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             this.reconcileIntervalMinutes = reconcileIntervalMinutes;
             return this;
         }
-        
+
         /**
          * 设置作业是否启动时禁止.
-         * 
+         *
          * <p>
          * 可用于部署作业时, 先在启动时禁止, 部署结束后统一启动.
          * </p>
@@ -192,10 +201,10 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             this.disabled = disabled;
             return this;
         }
-        
+
         /**
          * 设置本地配置是否可覆盖注册中心配置.
-         * 
+         *
          * <p>
          * 如果可覆盖, 每次启动作业都以本地配置为准.
          * </p>
@@ -209,15 +218,20 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             return this;
         }
 
+        public Builder status(final String status){
+            this.status = status;
+            return this;
+        }
 
-        
+
+
         /**
          * 构建作业配置对象.
-         * 
+         *
          * @return 作业配置对象
          */
         public final LiteJobConfiguration build() {
-            return new LiteJobConfiguration(jobConfig, monitorExecution, maxTimeDiffSeconds, monitorPort, jobShardingStrategyClass, reconcileIntervalMinutes, disabled, overwrite);
+            return new LiteJobConfiguration(jobConfig, monitorExecution, maxTimeDiffSeconds, monitorPort, jobShardingStrategyClass, reconcileIntervalMinutes, disabled, overwrite, status);
         }
     }
 }

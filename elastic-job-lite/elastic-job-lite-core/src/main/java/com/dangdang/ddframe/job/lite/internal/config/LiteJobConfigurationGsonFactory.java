@@ -36,21 +36,21 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LiteJobConfigurationGsonFactory {
-    
+
     static {
         GsonFactory.registerTypeAdapter(LiteJobConfiguration.class, new LiteJobConfigurationGsonTypeAdapter());
     }
-    
+
     /**
      * 将作业配置转换为JSON字符串.
-     * 
+     *
      * @param liteJobConfig 作业配置对象
      * @return 作业配置JSON字符串
      */
     public static String toJson(final LiteJobConfiguration liteJobConfig) {
         return GsonFactory.getGson().toJson(liteJobConfig);
     }
-    
+
     /**
      * 将作业配置转换为JSON字符串.
      *
@@ -60,7 +60,7 @@ public final class LiteJobConfigurationGsonFactory {
     public static String toJsonForObject(final Object liteJobConfig) {
         return GsonFactory.getGson().toJson(liteJobConfig);
     }
-    
+
     /**
      * 将JSON字符串转换为作业配置.
      *
@@ -70,14 +70,14 @@ public final class LiteJobConfigurationGsonFactory {
     public static LiteJobConfiguration fromJson(final String liteJobConfigJson) {
         return GsonFactory.getGson().fromJson(liteJobConfigJson, LiteJobConfiguration.class);
     }
-    
+
     /**
      * Lite作业配置的Json转换适配器.
      *
      * @author zhangliang
      */
     static final class LiteJobConfigurationGsonTypeAdapter extends AbstractJobConfigurationGsonTypeAdapter<LiteJobConfiguration> {
-        
+
         @Override
         protected void addToCustomizedValueMap(final String jsonName, final JsonReader in, final Map<String, Object> customizedValueMap) throws IOException {
             switch (jsonName) {
@@ -102,12 +102,15 @@ public final class LiteJobConfigurationGsonFactory {
                 case "overwrite":
                     customizedValueMap.put(jsonName, in.nextBoolean());
                     break;
+                case "status":
+                    customizedValueMap.put(jsonName, in.nextString());
+                    break;
                 default:
                     in.skipValue();
                     break;
             }
         }
-        
+
         @Override
         protected LiteJobConfiguration getJobRootConfiguration(final JobTypeConfiguration typeConfig, final Map<String, Object> customizedValueMap) {
             LiteJobConfiguration.Builder builder = LiteJobConfiguration.newBuilder(typeConfig);
@@ -132,9 +135,12 @@ public final class LiteJobConfigurationGsonFactory {
             if (customizedValueMap.containsKey("overwrite")) {
                 builder.overwrite((boolean) customizedValueMap.get("overwrite"));
             }
+            if (customizedValueMap.containsKey("status")){
+                builder.status((String) customizedValueMap.get("status"));
+            }
             return builder.build();
         }
-        
+
         @Override
         protected void writeCustomized(final JsonWriter out, final LiteJobConfiguration value) throws IOException {
             out.name("monitorExecution").value(value.isMonitorExecution());
@@ -144,6 +150,7 @@ public final class LiteJobConfigurationGsonFactory {
             out.name("reconcileIntervalMinutes").value(value.getReconcileIntervalMinutes());
             out.name("disabled").value(value.isDisabled());
             out.name("overwrite").value(value.isOverwrite());
+            out.name("status").value(value.getStatus());
         }
     }
 }

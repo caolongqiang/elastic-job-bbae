@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.job.lite.lifecycle.internal.operate;
 
+import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
+import com.dangdang.ddframe.job.lite.internal.config.ConfigurationService;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.lite.lifecycle.api.JobOperateAPI;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
@@ -31,13 +33,13 @@ import java.util.List;
  * @author caohao
  */
 public final class JobOperateAPIImpl implements JobOperateAPI {
-    
+
     private final CoordinatorRegistryCenter regCenter;
-    
+
     public JobOperateAPIImpl(final CoordinatorRegistryCenter regCenter) {
         this.regCenter = regCenter;
     }
-    
+
     @Override
     public void trigger(final Optional<String> jobName, final Optional<String> serverIp) {
         if (jobName.isPresent()) {
@@ -47,17 +49,17 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
             }
         }
     }
-    
+
     @Override
     public void disable(final Optional<String> jobName, final Optional<String> serverIp) {
         disableOrEnableJobs(jobName, serverIp, true);
     }
-    
+
     @Override
     public void enable(final Optional<String> jobName, final Optional<String> serverIp) {
         disableOrEnableJobs(jobName, serverIp, false);
     }
-    
+
     private void disableOrEnableJobs(final Optional<String> jobName, final Optional<String> serverIp, final boolean disabled) {
         Preconditions.checkArgument(jobName.isPresent() || serverIp.isPresent(), "At least indicate jobName or serverIp.");
         if (jobName.isPresent() && serverIp.isPresent()) {
@@ -71,16 +73,49 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
                     regCenter.persist(jobNodePath.getServerNodePath(each), "");
                 }
             }
+            ConfigurationService configurationService = new ConfigurationService(regCenter, jobName.get());
+            LiteJobConfiguration liteJobConfiguration = configurationService.load(true);
+            LiteJobConfiguration.Builder builder = LiteJobConfiguration.newBuilder(liteJobConfiguration.getTypeConfig());
+            builder.disabled(liteJobConfiguration.isDisabled());
+            builder.jobShardingStrategyClass(liteJobConfiguration.getJobShardingStrategyClass());
+            builder.maxTimeDiffSeconds(liteJobConfiguration.getMaxTimeDiffSeconds());
+            builder.monitorExecution(liteJobConfiguration.isMonitorExecution());
+            builder.monitorPort(liteJobConfiguration.getMonitorPort());
+            builder.overwrite(liteJobConfiguration.isOverwrite());
+            builder.reconcileIntervalMinutes(liteJobConfiguration.getReconcileIntervalMinutes());
+            if(disabled){
+                builder.status("DISABLED");
+            }else{
+                builder.status("");
+            }
+            configurationService.persist(builder.build());
         } else if (serverIp.isPresent()) {
             List<String> jobNames = regCenter.getChildrenKeys("/");
             for (String each : jobNames) {
                 if (regCenter.isExisted(new JobNodePath(each).getServerNodePath(serverIp.get()))) {
                     persistDisabledOrEnabledJob(each, serverIp.get(), disabled);
                 }
+                if(!disabled){
+                    //修改配置
+                    ConfigurationService configurationService = new ConfigurationService(regCenter, jobName.get());
+                    LiteJobConfiguration liteJobConfiguration = configurationService.load(true);
+                    LiteJobConfiguration.Builder builder = LiteJobConfiguration.newBuilder(liteJobConfiguration.getTypeConfig());
+                    builder.disabled(liteJobConfiguration.isDisabled());
+                    builder.jobShardingStrategyClass(liteJobConfiguration.getJobShardingStrategyClass());
+                    builder.maxTimeDiffSeconds(liteJobConfiguration.getMaxTimeDiffSeconds());
+                    builder.monitorExecution(liteJobConfiguration.isMonitorExecution());
+                    builder.monitorPort(liteJobConfiguration.getMonitorPort());
+                    builder.overwrite(liteJobConfiguration.isOverwrite());
+                    builder.reconcileIntervalMinutes(liteJobConfiguration.getReconcileIntervalMinutes());
+                    builder.status("");
+                    configurationService.persist(builder.build());
+                    //触发分片
+
+                }
             }
         }
     }
-    
+
     private void persistDisabledOrEnabledJob(final String jobName, final String serverIp, final boolean disabled) {
         JobNodePath jobNodePath = new JobNodePath(jobName);
         String serverNodePath = jobNodePath.getServerNodePath(serverIp);
@@ -90,7 +125,7 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
             regCenter.persist(serverNodePath, "");
         }
     }
-    
+
     @Override
     public void shutdown(final Optional<String> jobName, final Optional<String> serverIp) {
         Preconditions.checkArgument(jobName.isPresent() || serverIp.isPresent(), "At least indicate jobName or serverIp.");
@@ -119,7 +154,7 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
             }
         }
     }
-    
+
     @Override
     public void remove(final Optional<String> jobName, final Optional<String> serverIp) {
         shutdown(jobName, serverIp);

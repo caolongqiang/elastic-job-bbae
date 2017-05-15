@@ -14,7 +14,7 @@ function renderRegCenters() {
         search: true,
         showRefresh: true,
         showColumns: true,
-        columns: 
+        columns:
         [{
             field: "name",
             title: "注册中心名称",
@@ -207,8 +207,8 @@ function validate() {
                         message: "注册中心地址不能为空"
                     },
                     stringLength: {
-                        max: 100,
-                        message: "注册中心地址长度不能超过100字符大小"
+                        max: 1000,
+                        message: "注册中心地址长度不能超过1000字符大小"
                     }
                 }
             },
