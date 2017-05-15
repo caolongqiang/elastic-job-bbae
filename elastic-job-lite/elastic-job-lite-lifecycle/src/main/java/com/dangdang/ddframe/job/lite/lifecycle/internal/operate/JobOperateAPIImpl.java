@@ -76,21 +76,7 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
                 }
             }
             ConfigurationService configurationService = new ConfigurationService(regCenter, jobName.get());
-            LiteJobConfiguration liteJobConfiguration = configurationService.load(true);
-            LiteJobConfiguration.Builder builder = LiteJobConfiguration.newBuilder(liteJobConfiguration.getTypeConfig());
-            builder.disabled(liteJobConfiguration.isDisabled());
-            builder.jobShardingStrategyClass(liteJobConfiguration.getJobShardingStrategyClass());
-            builder.maxTimeDiffSeconds(liteJobConfiguration.getMaxTimeDiffSeconds());
-            builder.monitorExecution(liteJobConfiguration.isMonitorExecution());
-            builder.monitorPort(liteJobConfiguration.getMonitorPort());
-            builder.overwrite(liteJobConfiguration.isOverwrite());
-            builder.reconcileIntervalMinutes(liteJobConfiguration.getReconcileIntervalMinutes());
-            if(disabled){
-                builder.status("DISABLED");
-            }else{
-                builder.status("");
-            }
-            configurationService.persist(builder.build());
+            configurationService.persistStatus(disabled);
 
         } else if (serverIp.isPresent()) {
             List<String> jobNames = regCenter.getChildrenKeys("/");
@@ -99,21 +85,8 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
                     persistDisabledOrEnabledJob(each, serverIp.get(), disabled);
                 }
                 if(!disabled){
-                    //修改配置
                     ConfigurationService configurationService = new ConfigurationService(regCenter, jobName.get());
-                    LiteJobConfiguration liteJobConfiguration = configurationService.load(true);
-                    LiteJobConfiguration.Builder builder = LiteJobConfiguration.newBuilder(liteJobConfiguration.getTypeConfig());
-                    builder.disabled(liteJobConfiguration.isDisabled());
-                    builder.jobShardingStrategyClass(liteJobConfiguration.getJobShardingStrategyClass());
-                    builder.maxTimeDiffSeconds(liteJobConfiguration.getMaxTimeDiffSeconds());
-                    builder.monitorExecution(liteJobConfiguration.isMonitorExecution());
-                    builder.monitorPort(liteJobConfiguration.getMonitorPort());
-                    builder.overwrite(liteJobConfiguration.isOverwrite());
-                    builder.reconcileIntervalMinutes(liteJobConfiguration.getReconcileIntervalMinutes());
-                    builder.status("");
-                    configurationService.persist(builder.build());
-                    //触发分片
-
+                    configurationService.persistStatus(disabled);
                 }
             }
         }

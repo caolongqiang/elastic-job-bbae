@@ -27,24 +27,24 @@ import com.google.common.base.Optional;
 
 /**
  * 弹性化分布式作业配置服务.
- * 
+ *
  * @author zhangliang
  * @author caohao
  */
 public final class ConfigurationService {
-    
+
     private final TimeService timeService;
-    
+
     private final JobNodeStorage jobNodeStorage;
-    
+
     public ConfigurationService(final CoordinatorRegistryCenter regCenter, final String jobName) {
         jobNodeStorage = new JobNodeStorage(regCenter, jobName);
         timeService = new TimeService();
     }
-    
+
     /**
      * 读取作业配置.
-     * 
+     *
      * @param fromCache 是否从缓存中读取
      * @return 作业配置
      */
@@ -60,10 +60,10 @@ public final class ConfigurationService {
         }
         return LiteJobConfigurationGsonFactory.fromJson(result);
     }
-    
+
     /**
      * 持久化分布式作业配置信息.
-     * 
+     *
      * @param liteJobConfig 作业配置
      */
     public void persist(final LiteJobConfiguration liteJobConfig) {
@@ -72,15 +72,36 @@ public final class ConfigurationService {
             jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfig));
         }
     }
-    
+
+    public void persistStatus(boolean disabled) {
+        LiteJobConfiguration liteJobConfiguration = load(true);
+        LiteJobConfiguration.Builder builder = LiteJobConfiguration.newBuilder(liteJobConfiguration.getTypeConfig());
+        builder.disabled(liteJobConfiguration.isDisabled());
+        builder.jobShardingStrategyClass(liteJobConfiguration.getJobShardingStrategyClass());
+        builder.maxTimeDiffSeconds(liteJobConfiguration.getMaxTimeDiffSeconds());
+        builder.monitorExecution(liteJobConfiguration.isMonitorExecution());
+        builder.monitorPort(liteJobConfiguration.getMonitorPort());
+        builder.overwrite(liteJobConfiguration.isOverwrite());
+        builder.reconcileIntervalMinutes(liteJobConfiguration.getReconcileIntervalMinutes());
+        if(disabled){
+            builder.status("DISABLED");
+        }else{
+            builder.status("");
+        }
+        LiteJobConfiguration liteJobConfig = builder.build();
+        checkConflictJob(liteJobConfig);
+        jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfig));
+
+    }
+
     private void checkConflictJob(final LiteJobConfiguration liteJobConfig) {
         Optional<LiteJobConfiguration> liteJobConfigFromZk = find();
         if (liteJobConfigFromZk.isPresent() && !liteJobConfigFromZk.get().getTypeConfig().getJobClass().equals(liteJobConfig.getTypeConfig().getJobClass())) {
-            throw new JobConfigurationException("Job conflict with register center. The job '%s' in register center's class is '%s', your job class is '%s'", 
+            throw new JobConfigurationException("Job conflict with register center. The job '%s' in register center's class is '%s', your job class is '%s'",
                     liteJobConfig.getJobName(), liteJobConfigFromZk.get().getTypeConfig().getJobClass(), liteJobConfig.getTypeConfig().getJobClass());
         }
     }
-    
+
     private Optional<LiteJobConfiguration> find() {
         if (!jobNodeStorage.isJobNodeExisted(ConfigurationNode.ROOT)) {
             return Optional.absent();
@@ -92,10 +113,10 @@ public final class ConfigurationService {
         }
         return Optional.fromNullable(result);
     }
-    
+
     /**
      * 检查本机与注册中心的时间误差秒数是否在允许范围.
-     * 
+     *
      * @throws JobExecutionEnvironmentException 本机与注册中心的时间误差秒数不在允许范围所抛出的异常
      */
     public void checkMaxTimeDiffSecondsTolerable() throws JobExecutionEnvironmentException {
