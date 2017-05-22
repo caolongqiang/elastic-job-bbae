@@ -21,30 +21,34 @@ import com.dangdang.ddframe.job.api.JobType;
 
 /**
  * 作业类型配置.
- * 
+ *
  * @author caohao
  * @author zhangliang
  */
 public interface JobTypeConfiguration {
-    
+
     /**
      * 获取作业类型.
-     * 
+     *
      * @return 作业类型
      */
     JobType getJobType();
-    
+
     /**
      * 获取作业实现类名称.
      *
      * @return 作业实现类名称
      */
     String getJobClass();
-    
+
     /**
      * 获取作业核心配置.
-     * 
+     *
      * @return 作业核心配置
      */
-    JobCoreConfiguration getCoreConfig(); 
+    JobCoreConfiguration getCoreConfig();
+
+
+    void clearParameter();
+
 }

@@ -54,8 +54,9 @@ public final class JobCoreConfiguration {
 
     private final JobProperties jobProperties;
 
-    public void setJobParameter(String jobParameter){
-        this.jobParameter = jobParameter;
+    public JobCoreConfiguration clearJobParameter(){
+        this.jobParameter = "";
+        return this;
     }
 
     public JobCoreConfiguration(String jobName, String cron, String timezone, int shardingTotalCount, String shardingItemParameters, String jobParameter, boolean failover, boolean misfire, String description, JobProperties jobProperties) {

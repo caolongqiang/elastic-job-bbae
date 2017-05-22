@@ -26,6 +26,7 @@ import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodeStorage;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.util.env.TimeService;
+import com.dangdang.ddframe.job.util.json.GsonFactory;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 
@@ -101,10 +102,8 @@ public final class ConfigurationService {
     public void clearParameter(){
         LiteJobConfiguration liteJobConfiguration = load(true);
         if(StringUtils.isNotBlank(liteJobConfiguration.getTypeConfig().getCoreConfig().getJobParameter())) {
-            liteJobConfiguration.getTypeConfig().getCoreConfig().setJobParameter("");
-
             checkConflictJob(liteJobConfiguration);
-            jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfiguration));
+            jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfiguration.clearParameter()));
         }
     }
 

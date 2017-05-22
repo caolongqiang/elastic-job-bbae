@@ -53,6 +53,13 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
 
     private final String status;
 
+    public LiteJobConfiguration  clearParameter(){
+        if(typeConfig != null) {
+            typeConfig.clearParameter();
+        }
+        return this;
+    }
+
     public boolean isForbidden(){
         return StringUtils.equalsIgnoreCase(status, "DISABLED");
     }
