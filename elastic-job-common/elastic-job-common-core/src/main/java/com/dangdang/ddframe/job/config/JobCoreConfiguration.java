@@ -24,33 +24,39 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.TimeZone;
+
 /**
  * 作业核心配置.
- * 
+ *
  * @author zhangliang
  */
 @Getter
 public final class JobCoreConfiguration {
-    
+
     private final String jobName;
-    
+
     private final String cron;
 
     private final String timezone;
 
     private final int shardingTotalCount;
-    
+
     private final String shardingItemParameters;
-    
-    private final String jobParameter;
-    
+
+    private String jobParameter;
+
     private final boolean failover;
-    
+
     private final boolean misfire;
-    
+
     private final String description;
-    
+
     private final JobProperties jobProperties;
+
+    public void setJobParameter(String jobParameter){
+        this.jobParameter = jobParameter;
+    }
 
     public JobCoreConfiguration(String jobName, String cron, String timezone, int shardingTotalCount, String shardingItemParameters, String jobParameter, boolean failover, boolean misfire, String description, JobProperties jobProperties) {
         this.jobName = jobName;
@@ -90,9 +96,9 @@ public final class JobCoreConfiguration {
     }
 
     public static class Builder {
-        
+
         private final String jobName;
-        
+
         private final String cron;
 
         private String timezone;
@@ -114,17 +120,17 @@ public final class JobCoreConfiguration {
         }
 
         private String shardingItemParameters = "";
-        
+
         private String jobParameter = "";
-        
+
         private boolean failover;
-        
+
         private boolean misfire = true;
-        
+
         private String description = "";
-        
+
         private final JobProperties jobProperties = new JobProperties();
-        
+
         /**
          * 设置分片序列号和个性化参数对照表.
          *
@@ -145,7 +151,7 @@ public final class JobCoreConfiguration {
             }
             return this;
         }
-        
+
         /**
          * 设置作业自定义参数.
          *
@@ -163,13 +169,13 @@ public final class JobCoreConfiguration {
             }
             return this;
         }
-        
+
         /**
          * 设置是否开启失效转移.
          *
          * <p>
          * 只有对monitorExecution的情况下才可以开启失效转移.
-         * </p> 
+         * </p>
          *
          * @param failover 是否开启失效转移
          *
@@ -179,7 +185,7 @@ public final class JobCoreConfiguration {
             this.failover = failover;
             return this;
         }
-        
+
         /**
          * 设置是否开启misfire.
          *
@@ -191,7 +197,7 @@ public final class JobCoreConfiguration {
             this.misfire = misfire;
             return this;
         }
-        
+
         /**
          * 设置作业描述信息.
          *
@@ -205,7 +211,7 @@ public final class JobCoreConfiguration {
             }
             return this;
         }
-        
+
         /**
          * 设置作业属性.
          *
@@ -219,7 +225,7 @@ public final class JobCoreConfiguration {
             return this;
         }
 
-        
+
         /**
          * 构建作业配置对象.
          *
@@ -228,6 +234,7 @@ public final class JobCoreConfiguration {
         public final JobCoreConfiguration build() {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(jobName), "jobName can not be empty.");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(cron), "cron can not be empty.");
+            Preconditions.checkArgument(TimeZone.getTimeZone(timezone) != null, "timezone should be right");
             Preconditions.checkArgument(shardingTotalCount > 0, "shardingTotalCount should larger than zero.");
             return new JobCoreConfiguration(jobName, cron, timezone, shardingTotalCount, shardingItemParameters, jobParameter, failover, misfire, description, jobProperties);
         }

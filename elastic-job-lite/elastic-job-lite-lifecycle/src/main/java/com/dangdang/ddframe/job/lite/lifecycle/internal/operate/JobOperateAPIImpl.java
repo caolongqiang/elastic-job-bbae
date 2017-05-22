@@ -99,6 +99,8 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
             regCenter.persist(serverNodePath, "DISABLED");
         } else {
             regCenter.persist(serverNodePath, "");
+            ConfigurationService configurationService = new ConfigurationService(regCenter, jobName);
+            configurationService.persistStatus(disabled);
         }
     }
 

@@ -20,6 +20,10 @@ function renderJobsOverview() {
                 title: "cron表达式",
                 sortable: "true"
             }, {
+                field: "timezone",
+                title: "timeZone",
+                sortable: "true"
+            },{
                 field: "description",
                 title: "描述",
                 sortable: "true"
@@ -226,6 +230,7 @@ function renderJob(data) {
     $("#job-class").attr("value", data.jobClass);
     $("#sharding-total-count").attr("value", data.shardingTotalCount);
     $("#cron").attr("value", data.cron);
+    $("#timezone").attr("value", data.timezone);
     $("#sharding-item-parameters").text(data.shardingItemParameters);
     $("#job-parameter").attr("value", data.jobParameter);
     $("#monitor-execution").attr("checked", data.monitorExecution);

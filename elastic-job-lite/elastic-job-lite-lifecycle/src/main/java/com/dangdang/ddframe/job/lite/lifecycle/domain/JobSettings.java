@@ -27,48 +27,50 @@ import java.util.Map;
 
 /**
  * 作业设置对象.
- * 
+ *
  * @author zhangliang
  */
 @Getter
 @Setter
 public final class JobSettings implements Serializable {
-    
+
     private static final long serialVersionUID = -6532210090618686688L;
-    
+
     private String jobName;
-    
+
     private String jobType;
-    
+
     private String jobClass;
-    
+
     private String cron;
-    
+
+    private String timezone;
+
     private int shardingTotalCount;
-    
+
     private String shardingItemParameters;
-    
+
     private String jobParameter;
-    
+
     private boolean monitorExecution;
-    
+
     private boolean streamingProcess;
-    
+
     private int maxTimeDiffSeconds;
-    
+
     private int monitorPort = -1;
-    
+
     private boolean failover;
-    
+
     private boolean misfire;
-    
+
     private String jobShardingStrategyClass;
-    
+
     private String description;
-    
+
     private Map<String, String> jobProperties = new LinkedHashMap<>(JobPropertiesEnum.values().length, 1);
-    
+
     private String scriptCommandLine;
-    
+
     private int reconcileIntervalMinutes;
 }

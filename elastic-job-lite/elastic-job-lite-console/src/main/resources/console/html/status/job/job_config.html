@@ -34,7 +34,19 @@
                             </div>
                         </div>
                     </div>
+
+
                     <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="timezone" class="col-sm-6 control-label">timeZone(Asia/Shanghai、America/New_York)</label>
+                            <div class="col-sm-6">
+                                <input type="text" id="timezone" name="cron" class="form-control" data-toggle="tooltip" data-placement="bottom" title="timeZone" required />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-4">
                         <div class="form-group">
                             <label for="sharding-total-count" class="col-sm-6 control-label">作业分片总数</label>
                             <div class="col-sm-6">
@@ -42,6 +54,8 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group">
                             <label for="job-parameter" class="col-sm-6 control-label">自定义参数</label>

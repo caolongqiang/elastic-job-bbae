@@ -37,32 +37,33 @@ import com.dangdang.ddframe.job.lite.internal.sharding.ShardingService;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
  * 为作业提供内部服务的门面类.
- * 
+ *
  * @author zhangliang
  */
 @Slf4j
 public final class LiteJobFacade implements JobFacade {
-    
+
     private final ConfigurationService configService;
-    
+
     private final ShardingService shardingService;
-    
+
     private final ExecutionContextService executionContextService;
-    
+
     private final ExecutionService executionService;
-    
+
     private final FailoverService failoverService;
-    
+
     private final List<ElasticJobListener> elasticJobListeners;
-    
+
     private final JobEventBus jobEventBus;
-    
+
     public LiteJobFacade(final CoordinatorRegistryCenter regCenter, final String jobName, final List<ElasticJobListener> elasticJobListeners, final JobEventBus jobEventBus) {
         configService = new ConfigurationService(regCenter, jobName);
         shardingService = new ShardingService(regCenter, jobName);
@@ -72,29 +73,29 @@ public final class LiteJobFacade implements JobFacade {
         this.elasticJobListeners = elasticJobListeners;
         this.jobEventBus = jobEventBus;
     }
-    
+
     @Override
     public LiteJobConfiguration loadJobRootConfiguration(final boolean fromCache) {
         return configService.load(fromCache);
     }
-    
+
     @Override
     public void checkJobExecutionEnvironment() throws JobExecutionEnvironmentException {
         configService.checkMaxTimeDiffSecondsTolerable();
     }
-    
+
     @Override
     public void failoverIfNecessary() {
         if (configService.load(true).isFailover()) {
             failoverService.failoverIfNecessary();
         }
     }
-    
+
     @Override
     public void registerJobBegin(final ShardingContexts shardingContexts) {
         executionService.registerJobBegin(shardingContexts);
     }
-    
+
     @Override
     public void registerJobCompleted(final ShardingContexts shardingContexts) {
         executionService.registerJobCompleted(shardingContexts);
@@ -102,7 +103,7 @@ public final class LiteJobFacade implements JobFacade {
             failoverService.updateFailoverComplete(shardingContexts.getShardingItemParameters().keySet());
         }
     }
-    
+
     @Override
     public ShardingContexts getShardingContexts() {
         boolean isFailover = configService.load(true).isFailover();
@@ -120,60 +121,61 @@ public final class LiteJobFacade implements JobFacade {
         shardingItems.removeAll(executionService.getDisabledItems(shardingItems));
         return executionContextService.getJobShardingContext(shardingItems);
     }
-    
+
     @Override
     public boolean misfireIfRunning(final Collection<Integer> shardingItems) {
         return executionService.misfireIfRunning(shardingItems);
     }
-    
+
     @Override
     public void clearMisfire(final Collection<Integer> shardingItems) {
         executionService.clearMisfire(shardingItems);
     }
-    
+
     @Override
     public boolean isExecuteMisfired(final Collection<Integer> shardingItems) {
         return isEligibleForJobRunning() && configService.load(true).getTypeConfig().getCoreConfig().isMisfire() && !executionService.getMisfiredJobItems(shardingItems).isEmpty();
     }
-    
+
     @Override
     public boolean isEligibleForJobRunning() {
         LiteJobConfiguration liteJobConfig = configService.load(true);
         if (liteJobConfig.getTypeConfig() instanceof DataflowJobConfiguration) {
-            return !shardingService.isNeedSharding() && ((DataflowJobConfiguration) liteJobConfig.getTypeConfig()).isStreamingProcess();    
+            return !shardingService.isNeedSharding() && ((DataflowJobConfiguration) liteJobConfig.getTypeConfig()).isStreamingProcess();
         }
         return !shardingService.isNeedSharding();
     }
-    
+
     @Override
     public boolean isNeedSharding() {
         return shardingService.isNeedSharding();
     }
-    
+
     @Override
     public void cleanPreviousExecutionInfo() {
         executionService.cleanPreviousExecutionInfo();
     }
-    
+
     @Override
     public void beforeJobExecuted(final ShardingContexts shardingContexts) {
         for (ElasticJobListener each : elasticJobListeners) {
             each.beforeJobExecuted(shardingContexts);
         }
     }
-    
+
     @Override
     public void afterJobExecuted(final ShardingContexts shardingContexts) {
         for (ElasticJobListener each : elasticJobListeners) {
             each.afterJobExecuted(shardingContexts);
         }
+        configService.clearParameter();
     }
-    
+
     @Override
     public void postJobExecutionEvent(final JobExecutionEvent jobExecutionEvent) {
         jobEventBus.post(jobExecutionEvent);
     }
-    
+
     @Override
     public void postJobStatusTraceEvent(final String taskId, final State state, final String message) {
         TaskContext taskContext = TaskContext.from(taskId);

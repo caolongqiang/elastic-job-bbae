@@ -31,6 +31,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 
+import java.util.TimeZone;
+
 /**
  * 作业配置的实现类.
  *
@@ -39,9 +41,9 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class JobSettingsAPIImpl implements JobSettingsAPI {
-    
+
     private final CoordinatorRegistryCenter regCenter;
-    
+
     @Override
     public JobSettings getJobSettings(final String jobName) {
         JobSettings result = new JobSettings();
@@ -57,13 +59,14 @@ public final class JobSettingsAPIImpl implements JobSettingsAPI {
         }
         return result;
     }
-    
+
     private void buildSimpleJobSettings(final String jobName, final JobSettings result, final LiteJobConfiguration liteJobConfig) {
         result.setJobName(jobName);
         result.setJobType(liteJobConfig.getTypeConfig().getJobType().name());
         result.setJobClass(liteJobConfig.getTypeConfig().getJobClass());
         result.setShardingTotalCount(liteJobConfig.getTypeConfig().getCoreConfig().getShardingTotalCount());
         result.setCron(liteJobConfig.getTypeConfig().getCoreConfig().getCron());
+        result.setTimezone(liteJobConfig.getTypeConfig().getCoreConfig().getTimezone());
         result.setShardingItemParameters(liteJobConfig.getTypeConfig().getCoreConfig().getShardingItemParameters());
         result.setJobParameter(liteJobConfig.getTypeConfig().getCoreConfig().getJobParameter());
         result.setMonitorExecution(liteJobConfig.isMonitorExecution());
@@ -78,24 +81,25 @@ public final class JobSettingsAPIImpl implements JobSettingsAPI {
                 liteJobConfig.getTypeConfig().getCoreConfig().getJobProperties().get(JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER));
         result.getJobProperties().put(JobPropertiesEnum.JOB_EXCEPTION_HANDLER.getKey(), liteJobConfig.getTypeConfig().getCoreConfig().getJobProperties().get(JobPropertiesEnum.JOB_EXCEPTION_HANDLER));
     }
-    
+
     private void buildDataflowJobSettings(final JobSettings result, final DataflowJobConfiguration config) {
         result.setStreamingProcess(config.isStreamingProcess());
     }
-    
+
     private void buildScriptJobSettings(final JobSettings result, final ScriptJobConfiguration config) {
         result.setScriptCommandLine(config.getScriptCommandLine());
     }
-    
+
     @Override
     public void updateJobSettings(final JobSettings jobSettings) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(jobSettings.getJobName()), "jobName can not be empty.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(jobSettings.getCron()), "cron can not be empty.");
         Preconditions.checkArgument(jobSettings.getShardingTotalCount() > 0, "shardingTotalCount should larger than zero.");
+        Preconditions.checkArgument(TimeZone.getTimeZone(jobSettings.getTimezone()) != null, "timezone should be right");
         JobNodePath jobNodePath = new JobNodePath(jobSettings.getJobName());
         regCenter.update(jobNodePath.getConfigNodePath(), LiteJobConfigurationGsonFactory.toJsonForObject(jobSettings));
     }
-    
+
     @Override
     public void removeJobSettings(final String jobName) {
         regCenter.remove("/" + jobName);

@@ -17,13 +17,17 @@
 
 package com.dangdang.ddframe.job.lite.internal.config;
 
+import com.dangdang.ddframe.job.config.JobCoreConfiguration;
+import com.dangdang.ddframe.job.config.JobTypeConfiguration;
 import com.dangdang.ddframe.job.exception.JobConfigurationException;
 import com.dangdang.ddframe.job.exception.JobExecutionEnvironmentException;
+import com.dangdang.ddframe.job.executor.handler.JobProperties;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodeStorage;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.util.env.TimeService;
 import com.google.common.base.Optional;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 弹性化分布式作业配置服务.
@@ -92,6 +96,16 @@ public final class ConfigurationService {
         checkConflictJob(liteJobConfig);
         jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfig));
 
+    }
+
+    public void clearParameter(){
+        LiteJobConfiguration liteJobConfiguration = load(true);
+        if(StringUtils.isNotBlank(liteJobConfiguration.getTypeConfig().getCoreConfig().getJobParameter())) {
+            liteJobConfiguration.getTypeConfig().getCoreConfig().setJobParameter("");
+
+            checkConflictJob(liteJobConfiguration);
+            jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfiguration));
+        }
     }
 
     private void checkConflictJob(final LiteJobConfiguration liteJobConfig) {
