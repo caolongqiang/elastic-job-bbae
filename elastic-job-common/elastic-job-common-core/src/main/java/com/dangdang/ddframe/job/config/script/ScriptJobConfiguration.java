@@ -26,19 +26,25 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * 脚本作业配置.
- * 
+ *
  * @author caohao
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 public final class ScriptJobConfiguration implements JobTypeConfiguration {
-    
+
     private final JobCoreConfiguration coreConfig;
-    
+
     private final JobType jobType = JobType.SCRIPT;
-    
+
     private final String jobClass = ScriptJob.class.getCanonicalName();
-    
+
     private final String scriptCommandLine;
+
+    public void clearParameter(){
+        if(coreConfig != null){
+            coreConfig.clearJobParameter();
+        }
+    }
 }

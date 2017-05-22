@@ -25,19 +25,25 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * 数据流作业配置信息.
- * 
+ *
  * @author caohao
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 public final class DataflowJobConfiguration implements JobTypeConfiguration {
-    
+
     private final JobCoreConfiguration coreConfig;
-    
+
     private final JobType jobType = JobType.DATAFLOW;
-    
+
     private final String jobClass;
-    
+
     private final boolean streamingProcess;
+
+    public void clearParameter(){
+        if(coreConfig != null){
+            coreConfig.clearJobParameter();
+        }
+    }
 }
