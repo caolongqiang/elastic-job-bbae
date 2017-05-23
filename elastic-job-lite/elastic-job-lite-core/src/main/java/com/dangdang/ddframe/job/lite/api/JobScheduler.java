@@ -37,6 +37,7 @@ import com.dangdang.ddframe.job.lite.internal.schedule.LiteJobFacade;
 import com.dangdang.ddframe.job.lite.internal.schedule.SchedulerFacade;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
+import com.dangdang.ddframe.job.util.env.IpUtils;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.quartz.JobBuilder;
@@ -112,13 +113,20 @@ public class JobScheduler {
         jobScheduleController.scheduleJob(liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getCron(),
                 liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getTimezone());
 
-        jobFacade.getShardingContexts();
         if(liteJobConfigFromRegCenter.isForbidden()){
             JobNodePath jobNodePath = new JobNodePath(liteJobConfigFromRegCenter.getJobName());
             for (String each : regCenter.getChildrenKeys(jobNodePath.getServerNodePath())) {
                 regCenter.persist(jobNodePath.getServerNodePath(each), "DISABLED");
             }
+        }else{
+            JobNodePath jobNodePath = new JobNodePath(liteJobConfigFromRegCenter.getJobName());
+            for (String each : regCenter.getChildrenKeys(jobNodePath.getServerNodePath())) {
+                if(!each.startsWith(IpUtils.getIp())) {
+                    regCenter.persist(jobNodePath.getServerNodePath(each), "DISABLED");
+                }
+            }
         }
+        jobFacade.getShardingContexts();
     }
 
     private JobDetail createJobDetail(final String jobClass) {

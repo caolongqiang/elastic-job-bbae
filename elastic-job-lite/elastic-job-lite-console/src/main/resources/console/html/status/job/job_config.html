@@ -18,6 +18,15 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="status" class="col-sm-6 control-label">job状态</label>
+                            <div class="col-sm-6">
+                                <input type="text" id="status" name="status" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="job-class" class="col-sm-2 control-label">作业实现类</label>
@@ -35,17 +44,6 @@
                         </div>
                     </div>
 
-
-                    <div class="col-sm-3">
-                        <div class="form-group">
-                            <label for="timezone" class="col-sm-6 control-label">timeZone(Asia/Shanghai、America/New_York)</label>
-                            <div class="col-sm-6">
-                                <input type="text" id="timezone" name="cron" class="form-control" data-toggle="tooltip" data-placement="bottom" title="timeZone" required />
-                            </div>
-                        </div>
-                    </div>
-
-
                     <div class="col-sm-4">
                         <div class="form-group">
                             <label for="sharding-total-count" class="col-sm-6 control-label">作业分片总数</label>
@@ -55,6 +53,14 @@
                         </div>
                     </div>
                 </div>
+
+            <div class="form-group">
+                <label for="timezone" class="col-sm-2 control-label">timeZone</label>
+                <div class="col-sm-9">
+                    <input type="text" id="timezone" name="timezone" class="form-control" data-toggle="tooltip" data-placement="bottom" title="timeZone" required />(Asia/Shanghai、America/New_York)
+                </div>
+            </div>
+
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group">
@@ -64,7 +70,28 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="disabled" class="col-sm-6 control-label">disabled(是否新实例上线是关闭)</label>
+                            <div class="col-sm-6">
+                                <input type="checkbox" id="disabled" name="disabled" data-toggle="tooltip" data-placement="bottom" title="是否新实例上线是关闭" />
+                      </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="overwrite" class="col-sm-6 control-label">overwrite(是否允许覆盖zk中的配置)</label>
+                            <div class="col-sm-6">
+                                <input type="checkbox" id="overwrite" name="overwrite" data-toggle="tooltip" data-placement="bottom" title="是否允许覆盖zk中的配置" />
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group">
