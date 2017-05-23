@@ -28,6 +28,7 @@ import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.util.env.TimeService;
 import com.dangdang.ddframe.job.util.json.GsonFactory;
 import com.google.common.base.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -36,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author zhangliang
  * @author caohao
  */
+@Slf4j
 public final class ConfigurationService {
 
     private final TimeService timeService;
@@ -103,7 +105,9 @@ public final class ConfigurationService {
         LiteJobConfiguration liteJobConfiguration = load(true);
         if(StringUtils.isNotBlank(liteJobConfiguration.getTypeConfig().getCoreConfig().getJobParameter())) {
             checkConflictJob(liteJobConfiguration);
-            jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfiguration.clearParameter()));
+            liteJobConfiguration = liteJobConfiguration.clearParameter();
+            log.info("liteJobConfiguration:{}", LiteJobConfigurationGsonFactory.toJson(liteJobConfiguration));
+            jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfiguration));
         }
     }
 
