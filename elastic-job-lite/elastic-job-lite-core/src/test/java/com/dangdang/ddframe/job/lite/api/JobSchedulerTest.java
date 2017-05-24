@@ -29,8 +29,10 @@ import com.dangdang.ddframe.job.lite.internal.schedule.SchedulerFacade;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.unitils.util.ReflectionUtils;
@@ -39,6 +41,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class JobSchedulerTest {
     
     @Mock
@@ -56,6 +59,7 @@ public final class JobSchedulerTest {
     
     @Before
     public void initMocks() throws NoSuchFieldException {
+        MockitoAnnotations.initMocks(this);
         JobRegistry.getInstance().addJobInstance("test_job", new JobInstance("127.0.0.1@-@0"));
         liteJobConfig = LiteJobConfiguration.newBuilder(
                 new SimpleJobConfiguration(JobCoreConfiguration.newBuilder("test_job", "* * 0/10 * * ? 2050", 3).build(), TestSimpleJob.class.getCanonicalName())).build();
