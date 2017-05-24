@@ -68,9 +68,15 @@ public final class JobSettings implements Serializable {
 
     private String description;
 
+    private String status;
+
     private Map<String, String> jobProperties = new LinkedHashMap<>(JobPropertiesEnum.values().length, 1);
 
     private String scriptCommandLine;
 
     private int reconcileIntervalMinutes;
+
+    private boolean disabled;
+
+    private boolean overwrite;
 }

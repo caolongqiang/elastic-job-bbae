@@ -251,4 +251,7 @@ function renderJob(data) {
     if ("SCRIPT" === $("#job-type").val()) {
         $("#script-commandLine-group").show();
     }
+    $("#disabled").attr("checked", data.disabled);
+    $("#overwrite").attr("checked", data.overwrite);
+    $("#status").attr("value",data.status);
 }

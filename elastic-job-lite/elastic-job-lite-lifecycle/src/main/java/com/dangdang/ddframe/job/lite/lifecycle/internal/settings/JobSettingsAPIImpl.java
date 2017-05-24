@@ -22,6 +22,7 @@ import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
 import com.dangdang.ddframe.job.config.script.ScriptJobConfiguration;
 import com.dangdang.ddframe.job.executor.handler.JobProperties.JobPropertiesEnum;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
+import com.dangdang.ddframe.job.lite.internal.config.ConfigurationService;
 import com.dangdang.ddframe.job.lite.internal.config.LiteJobConfigurationGsonFactory;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.lite.lifecycle.api.JobSettingsAPI;
@@ -77,9 +78,14 @@ public final class JobSettingsAPIImpl implements JobSettingsAPI {
         result.setJobShardingStrategyClass(liteJobConfig.getJobShardingStrategyClass());
         result.setDescription(liteJobConfig.getTypeConfig().getCoreConfig().getDescription());
         result.setReconcileIntervalMinutes(liteJobConfig.getReconcileIntervalMinutes());
+
         result.getJobProperties().put(JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER.getKey(),
                 liteJobConfig.getTypeConfig().getCoreConfig().getJobProperties().get(JobPropertiesEnum.EXECUTOR_SERVICE_HANDLER));
         result.getJobProperties().put(JobPropertiesEnum.JOB_EXCEPTION_HANDLER.getKey(), liteJobConfig.getTypeConfig().getCoreConfig().getJobProperties().get(JobPropertiesEnum.JOB_EXCEPTION_HANDLER));
+
+        result.setStatus(liteJobConfig.getStatus());
+        result.setDisabled(liteJobConfig.isDisabled());
+        result.setOverwrite(liteJobConfig.isOverwrite());
     }
 
     private void buildDataflowJobSettings(final JobSettings result, final DataflowJobConfiguration config) {
@@ -97,6 +103,7 @@ public final class JobSettingsAPIImpl implements JobSettingsAPI {
         Preconditions.checkArgument(jobSettings.getShardingTotalCount() > 0, "shardingTotalCount should larger than zero.");
         Preconditions.checkArgument(TimeZone.getTimeZone(jobSettings.getTimezone()) != null, "timezone should be right");
         JobNodePath jobNodePath = new JobNodePath(jobSettings.getJobName());
+
         regCenter.update(jobNodePath.getConfigNodePath(), LiteJobConfigurationGsonFactory.toJsonForObject(jobSettings));
     }
 
