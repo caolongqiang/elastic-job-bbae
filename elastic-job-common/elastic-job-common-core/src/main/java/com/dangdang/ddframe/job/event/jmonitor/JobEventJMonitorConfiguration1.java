@@ -23,9 +23,7 @@ import com.dangdang.ddframe.job.event.JobEventListenerConfigurationException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
 import java.io.Serializable;
-import java.sql.SQLException;
 
 /**
  * 作业数据库事件配置.
@@ -34,13 +32,13 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 @Getter
-public final class JobEventJMonitorConfiguration extends JobEventJMonitorIdentity implements JobEventConfiguration, Serializable {
+public final class JobEventJMonitorConfiguration1 extends JobEventJMonitorIdentity1 implements JobEventConfiguration, Serializable {
     
     private static final long serialVersionUID = 3344410699286435226L;
 
     
     @Override
     public JobEventListener createJobEventListener() throws JobEventListenerConfigurationException {
-        return new JobEventJMonitorListener();
+        return new JobEventJMonitorListener1();
     }
 }

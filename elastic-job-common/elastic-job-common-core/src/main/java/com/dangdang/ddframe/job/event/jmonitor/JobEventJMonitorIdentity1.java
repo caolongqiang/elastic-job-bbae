@@ -19,7 +19,7 @@ package com.dangdang.ddframe.job.event.jmonitor;
 
 import com.dangdang.ddframe.job.event.JobEventIdentity;
 
-public class JobEventJMonitorIdentity implements JobEventIdentity {
+public class JobEventJMonitorIdentity1 implements JobEventIdentity {
     
     @Override
     public String getIdentity() {
