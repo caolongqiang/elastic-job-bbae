@@ -78,4 +78,6 @@ public final class BaseJobBeanDefinitionParserTag {
 
     public static final String JOB_FORBIDDEN_STATUS = "status";
 
+    public static final String ENABLE_JMONITOR = "enable-jmonitor";
+
 }

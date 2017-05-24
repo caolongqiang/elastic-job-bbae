@@ -20,6 +20,7 @@ package com.dangdang.ddframe.job.lite.internal.schedule;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
 import com.dangdang.ddframe.job.context.TaskContext;
 import com.dangdang.ddframe.job.event.JobEventBus;
+import com.dangdang.ddframe.job.event.jmonitor.JobEventJMonitorConfiguration;
 import com.dangdang.ddframe.job.event.type.JobExecutionEvent;
 import com.dangdang.ddframe.job.event.type.JobStatusTraceEvent;
 import com.dangdang.ddframe.job.event.type.JobStatusTraceEvent.Source;
@@ -64,7 +65,13 @@ public final class LiteJobFacade implements JobFacade {
 
     private final JobEventBus jobEventBus;
 
-    public LiteJobFacade(final CoordinatorRegistryCenter regCenter, final String jobName, final List<ElasticJobListener> elasticJobListeners, final JobEventBus jobEventBus) {
+    private final JobEventBus jmonitorEventBus;
+
+    public LiteJobFacade(final CoordinatorRegistryCenter regCenter,
+                         final String jobName,
+                         final List<ElasticJobListener> elasticJobListeners,
+                         final JobEventBus jobEventBus,
+                         final boolean enableJMonitor) {
         configService = new ConfigurationService(regCenter, jobName);
         shardingService = new ShardingService(regCenter, jobName);
         executionContextService = new ExecutionContextService(regCenter, jobName);
@@ -72,6 +79,12 @@ public final class LiteJobFacade implements JobFacade {
         failoverService = new FailoverService(regCenter, jobName);
         this.elasticJobListeners = elasticJobListeners;
         this.jobEventBus = jobEventBus;
+
+        if (enableJMonitor) {
+            this.jmonitorEventBus = new JobEventBus(new JobEventJMonitorConfiguration());
+        } else {
+            this.jmonitorEventBus = new JobEventBus();
+        }
     }
 
     @Override
@@ -174,13 +187,18 @@ public final class LiteJobFacade implements JobFacade {
     @Override
     public void postJobExecutionEvent(final JobExecutionEvent jobExecutionEvent) {
         jobEventBus.post(jobExecutionEvent);
+        jmonitorEventBus.post(jobExecutionEvent);
     }
 
     @Override
     public void postJobStatusTraceEvent(final String taskId, final State state, final String message) {
         TaskContext taskContext = TaskContext.from(taskId);
-        jobEventBus.post(new JobStatusTraceEvent(taskContext.getMetaInfo().getJobName(), taskContext.getId(),
-                taskContext.getSlaveId(), Source.LITE_EXECUTOR, taskContext.getType(), taskContext.getMetaInfo().getShardingItems().toString(), state, message));
+        JobStatusTraceEvent event = new JobStatusTraceEvent(taskContext.getMetaInfo().getJobName(), taskContext.getId(),
+                taskContext.getSlaveId(), Source.LITE_EXECUTOR, taskContext.getType(), taskContext.getMetaInfo().getShardingItems().toString(), state, message);
+
+        jobEventBus.post(event);
+        jmonitorEventBus.post(event);
+
         if (!Strings.isNullOrEmpty(message)) {
             log.trace(message);
         }

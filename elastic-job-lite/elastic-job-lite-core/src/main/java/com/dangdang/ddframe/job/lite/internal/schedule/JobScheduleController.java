@@ -87,7 +87,6 @@ public final class JobScheduleController {
     
     private CronTrigger createTrigger(final String cron, final String timezone) {
         TimeZone tz = TimeZone.getTimeZone(timezone);
-        System.out.println("trigger:" + cron + " timezone:" + timezone);
         return TriggerBuilder.newTrigger().withIdentity(triggerIdentity).withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(tz).withMisfireHandlingInstructionDoNothing()).build();
     }
     

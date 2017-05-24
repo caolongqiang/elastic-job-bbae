@@ -43,6 +43,7 @@ import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBean
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.DISTRIBUTED_LISTENER_COMPLETED_TIMEOUT_MILLISECONDS_ATTRIBUTE;
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.DISTRIBUTED_LISTENER_STARTED_TIMEOUT_MILLISECONDS_ATTRIBUTE;
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.DISTRIBUTED_LISTENER_TAG;
+import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.ENABLE_JMONITOR;
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.EVENT_TRACE_RDB_DATA_SOURCE_ATTRIBUTE;
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.EXECUTOR_SERVICE_HANDLER_ATTRIBUTE;
 import static com.dangdang.ddframe.job.lite.spring.job.parser.common.BaseJobBeanDefinitionParserTag.FAILOVER_ATTRIBUTE;
@@ -106,7 +107,7 @@ public abstract class AbstractJobBeanDefinitionParser extends AbstractBeanDefini
         result.addConstructorArgValue(element.getAttribute(DISABLED_ATTRIBUTE));
         result.addConstructorArgValue(element.getAttribute(OVERWRITE_ATTRIBUTE));
         result.addConstructorArgValue(element.getAttribute(JOB_FORBIDDEN_STATUS));
-
+        result.addConstructorArgValue(element.getAttribute(ENABLE_JMONITOR));
 
         return result.getBeanDefinition();
     }

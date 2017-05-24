@@ -53,6 +53,8 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
 
     private final String status;
 
+    private final boolean enableJMonitor;
+
     public LiteJobConfiguration  clearParameter(){
         if(typeConfig != null) {
             typeConfig.clearParameter();
@@ -112,6 +114,8 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
         private int reconcileIntervalMinutes = 10;
 
         private String status = "DISABLED";
+
+        private boolean enableJMonitor;
 
         /**
          * 设置监控作业执行时状态.
@@ -230,6 +234,10 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
             return this;
         }
 
+        public Builder enableJMonitor(final boolean enableJMonitor){
+            this.enableJMonitor = enableJMonitor;
+            return this;
+        }
 
 
         /**
@@ -238,7 +246,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
          * @return 作业配置对象
          */
         public final LiteJobConfiguration build() {
-            return new LiteJobConfiguration(jobConfig, monitorExecution, maxTimeDiffSeconds, monitorPort, jobShardingStrategyClass, reconcileIntervalMinutes, disabled, overwrite, status);
+            return new LiteJobConfiguration(jobConfig, monitorExecution, maxTimeDiffSeconds, monitorPort, jobShardingStrategyClass, reconcileIntervalMinutes, disabled, overwrite, status, enableJMonitor);
         }
     }
 }

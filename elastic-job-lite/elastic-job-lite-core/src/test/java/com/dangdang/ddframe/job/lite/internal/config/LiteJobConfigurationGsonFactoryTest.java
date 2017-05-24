@@ -41,20 +41,20 @@ public final class LiteJobConfigurationGsonFactoryTest {
     private static final String JOB_PROPS_JSON = "{\"job_exception_handler\":\"" + DefaultJobExceptionHandler.class.getCanonicalName() + "\","
             + "\"executor_service_handler\":\"" + DefaultExecutorServiceHandler.class.getCanonicalName() + "\"}";
     
-    private String simpleJobJson =  "{\"jobName\":\"test_job\",\"jobClass\":\"com.dangdang.ddframe.job.lite.fixture.TestSimpleJob\",\"jobType\":\"SIMPLE\",\"cron\":\"0/1 * * * * ?\","
+    private String simpleJobJson =  "{\"jobName\":\"test_job\",\"jobClass\":\"com.dangdang.ddframe.job.lite.fixture.TestSimpleJob\",\"jobType\":\"SIMPLE\",\"cron\":\"0/1 * * * * ?\",\"timezone\":\"Asia/Shanghai\","
             + "\"shardingTotalCount\":3,\"shardingItemParameters\":\"\",\"jobParameter\":\"\",\"failover\":true,\"misfire\":false,\"description\":\"\","
             + "\"jobProperties\":" + JOB_PROPS_JSON + ",\"monitorExecution\":false,\"maxTimeDiffSeconds\":1000,\"monitorPort\":8888,"
-            + "\"jobShardingStrategyClass\":\"testClass\",\"reconcileIntervalMinutes\":15,\"disabled\":true,\"overwrite\":true}";
+            + "\"jobShardingStrategyClass\":\"testClass\",\"reconcileIntervalMinutes\":15,\"disabled\":true,\"overwrite\":true,\"status\":\"DISABLED\",\"enableJMonitor\":false}";
     
-    private String dataflowJobJson = "{\"jobName\":\"test_job\",\"jobClass\":\"com.dangdang.ddframe.job.lite.fixture.TestDataflowJob\",\"jobType\":\"DATAFLOW\",\"cron\":\"0/1 * * * * ?\","
+    private String dataflowJobJson = "{\"jobName\":\"test_job\",\"jobClass\":\"com.dangdang.ddframe.job.lite.fixture.TestDataflowJob\",\"jobType\":\"DATAFLOW\",\"cron\":\"0/1 * * * * ?\",\"timezone\":\"Asia/Shanghai\","
             + "\"shardingTotalCount\":3,\"shardingItemParameters\":\"\",\"jobParameter\":\"\",\"failover\":false,\"misfire\":true,\"description\":\"\","
             + "\"jobProperties\":" + JOB_PROPS_JSON + ",\"streamingProcess\":true,"
-            + "\"monitorExecution\":true,\"maxTimeDiffSeconds\":-1,\"monitorPort\":-1,\"jobShardingStrategyClass\":\"\",\"reconcileIntervalMinutes\":10,\"disabled\":false,\"overwrite\":false}";
+            + "\"monitorExecution\":true,\"maxTimeDiffSeconds\":-1,\"monitorPort\":-1,\"jobShardingStrategyClass\":\"\",\"reconcileIntervalMinutes\":10,\"disabled\":false,\"overwrite\":false,\"status\":\"DISABLED\",\"enableJMonitor\":false}";
     
-    private String scriptJobJson = "{\"jobName\":\"test_job\",\"jobClass\":\"com.dangdang.ddframe.job.api.script.ScriptJob\",\"jobType\":\"SCRIPT\",\"cron\":\"0/1 * * * * ?\","
+    private String scriptJobJson = "{\"jobName\":\"test_job\",\"jobClass\":\"com.dangdang.ddframe.job.api.script.ScriptJob\",\"jobType\":\"SCRIPT\",\"cron\":\"0/1 * * * * ?\",\"timezone\":\"Asia/Shanghai\","
             + "\"shardingTotalCount\":3,\"shardingItemParameters\":\"\",\"jobParameter\":\"\",\"failover\":false,\"misfire\":true,\"description\":\"\","
             + "\"jobProperties\":" + JOB_PROPS_JSON + ",\"scriptCommandLine\":\"test.sh\",\"monitorExecution\":true,\"maxTimeDiffSeconds\":-1,\"monitorPort\":-1,"
-            + "\"jobShardingStrategyClass\":\"\",\"reconcileIntervalMinutes\":10,\"disabled\":false,\"overwrite\":false}";
+            + "\"jobShardingStrategyClass\":\"\",\"reconcileIntervalMinutes\":10,\"disabled\":false,\"overwrite\":false,\"status\":\"DISABLED\",\"enableJMonitor\":false}";
     
     @Test
     public void assertToJsonForSimpleJob() {
@@ -63,7 +63,10 @@ public final class LiteJobConfigurationGsonFactoryTest {
                 .monitorExecution(false).maxTimeDiffSeconds(1000).monitorPort(8888).jobShardingStrategyClass("testClass").disabled(true).overwrite(true).reconcileIntervalMinutes(15).build();
         assertThat(LiteJobConfigurationGsonFactory.toJson(actual), is(simpleJobJson));
     }
-    
+
+
+
+
     @Test
     public void assertToJsonForDataflowJob() {
         LiteJobConfiguration actual = LiteJobConfiguration.newBuilder(new DataflowJobConfiguration(JobCoreConfiguration.newBuilder("test_job", "0/1 * * * * ?", 3).build(), 

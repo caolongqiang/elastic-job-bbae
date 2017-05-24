@@ -47,6 +47,7 @@
         <junit.version>4.12</junit.version>
         <unitils.core.version>3.4.2</unitils.core.version>
         <mockito.version>2.7.21</mockito.version>
+        <jmonitor.version>1.0.4</jmonitor.version>
 
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -147,6 +148,14 @@
                 <version>${springframework.version}</version>
                 <scope>provided</scope>
             </dependency>
+
+            <dependency>
+                <groupId>com.jimu.common</groupId>
+                <artifactId>jmonitor</artifactId>
+                <version>${jmonitor.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>

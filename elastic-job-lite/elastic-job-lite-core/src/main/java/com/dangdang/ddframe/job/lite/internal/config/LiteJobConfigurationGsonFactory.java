@@ -105,6 +105,9 @@ public final class LiteJobConfigurationGsonFactory {
                 case "status":
                     customizedValueMap.put(jsonName, in.nextString());
                     break;
+                case "enableJMonitor":
+                    customizedValueMap.put(jsonName, in.nextBoolean());
+                    break;
                 default:
                     in.skipValue();
                     break;
@@ -138,6 +141,9 @@ public final class LiteJobConfigurationGsonFactory {
             if (customizedValueMap.containsKey("status")){
                 builder.status((String) customizedValueMap.get("status"));
             }
+            if (customizedValueMap.containsKey("enableJMonitor")) {
+                builder.enableJMonitor((boolean) customizedValueMap.get("enableJMonitor"));
+            }
             return builder.build();
         }
 
@@ -151,6 +157,7 @@ public final class LiteJobConfigurationGsonFactory {
             out.name("disabled").value(value.isDisabled());
             out.name("overwrite").value(value.isOverwrite());
             out.name("status").value(value.getStatus());
+            out.name("enableJMonitor").value(value.isEnableJMonitor());
         }
     }
 }

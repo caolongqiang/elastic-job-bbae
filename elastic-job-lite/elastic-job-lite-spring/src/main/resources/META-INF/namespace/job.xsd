@@ -48,6 +48,7 @@
                 <xsd:attribute name="job-exception-handler" type="xsd:string" default="com.dangdang.ddframe.job.executor.handler.impl.DefaultJobExceptionHandler"/>
                 <xsd:attribute name="event-trace-rdb-data-source" type="xsd:string" />
                 <xsd:attribute name="status" type="xsd:string" default="DISABLED"/>
+                <xsd:attribute name="enable-jmonitor" type="xsd:string" default="true"/>
 
             </xsd:extension>
         </xsd:complexContent>
