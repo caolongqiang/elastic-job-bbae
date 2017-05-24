@@ -32,13 +32,13 @@ import java.io.Serializable;
  */
 @RequiredArgsConstructor
 @Getter
-public final class JobEventJMonitorConfiguration1 extends JobEventJMonitorIdentity1 implements JobEventConfiguration, Serializable {
+public final class JobEventJMonitorConfiguration extends JobEventJMonitorIdentity implements JobEventConfiguration, Serializable {
     
     private static final long serialVersionUID = 3344410699286435226L;
 
     
     @Override
     public JobEventListener createJobEventListener() throws JobEventListenerConfigurationException {
-        return new JobEventJMonitorListener1();
+        return new JobEventJMonitorListener();
     }
 }

@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author zhenbao.zhouzhou
  */
 @Slf4j
-public final class JobEventJMonitorListener1 extends JobEventJMonitorIdentity1 implements JobEventListener {
+public final class JobEventJMonitorListener extends JobEventJMonitorIdentity implements JobEventListener {
 
     private final static String PREFIX = "ElasticJOB_";
     private final static String SUCCESS = "_success";

@@ -20,7 +20,7 @@ package com.dangdang.ddframe.job.lite.internal.schedule;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
 import com.dangdang.ddframe.job.context.TaskContext;
 import com.dangdang.ddframe.job.event.JobEventBus;
-import com.dangdang.ddframe.job.event.jmonitor.JobEventJMonitorConfiguration1;
+import com.dangdang.ddframe.job.event.jmonitor.JobEventJMonitorConfiguration;
 import com.dangdang.ddframe.job.event.type.JobExecutionEvent;
 import com.dangdang.ddframe.job.event.type.JobStatusTraceEvent;
 import com.dangdang.ddframe.job.event.type.JobStatusTraceEvent.Source;
@@ -80,7 +80,7 @@ public final class LiteJobFacade implements JobFacade {
         this.jobEventBus = jobEventBus;
 
         if (enableJMonitor) {
-            this.jmonitorEventBus = new JobEventBus(new JobEventJMonitorConfiguration1());
+            this.jmonitorEventBus = new JobEventBus(new JobEventJMonitorConfiguration());
         } else {
             this.jmonitorEventBus = new JobEventBus();
         }
