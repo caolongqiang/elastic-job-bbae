@@ -37,6 +37,7 @@ import java.sql.SQLException;
 public final class JobEventJMonitorConfiguration extends JobEventJMonitorIdentity implements JobEventConfiguration, Serializable {
     
     private static final long serialVersionUID = 3344410699286435226L;
+
     
     @Override
     public JobEventListener createJobEventListener() throws JobEventListenerConfigurationException {
