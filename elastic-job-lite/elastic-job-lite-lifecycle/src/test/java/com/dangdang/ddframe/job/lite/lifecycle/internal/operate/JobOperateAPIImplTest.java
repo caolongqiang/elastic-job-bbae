@@ -33,7 +33,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class JobOperateAPIImplTest {
-    
+
+    @Mock
     private JobOperateAPI jobOperateAPI;
     
     @Mock
