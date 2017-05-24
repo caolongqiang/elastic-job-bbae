@@ -19,6 +19,7 @@ package com.dangdang.ddframe.job.lite.api;
 
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
+import com.dangdang.ddframe.job.executor.JobFacade;
 import com.dangdang.ddframe.job.lite.api.listener.fixture.ElasticJobListenerCaller;
 import com.dangdang.ddframe.job.lite.api.strategy.JobInstance;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
@@ -40,20 +41,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class JobSchedulerTest {
-    
+
     @Mock
     private CoordinatorRegistryCenter regCenter;
-    
+
     @Mock
     private SchedulerFacade schedulerFacade;
-    
+
     @Mock
     private ElasticJobListenerCaller caller;
-    
+    @Mock
+    private JobFacade jobFacade;
+
     private LiteJobConfiguration liteJobConfig;
-    
+
     private JobScheduler jobScheduler;
-    
+
     @Before
     public void initMocks() throws NoSuchFieldException {
         JobRegistry.getInstance().addJobInstance("test_job", new JobInstance("127.0.0.1@-@0"));
@@ -63,8 +66,9 @@ public final class JobSchedulerTest {
         MockitoAnnotations.initMocks(this);
         ReflectionUtils.setFieldValue(jobScheduler, "regCenter", regCenter);
         ReflectionUtils.setFieldValue(jobScheduler, "schedulerFacade", schedulerFacade);
+        ReflectionUtils.setFieldValue(jobScheduler, "jobFacade", jobFacade);
     }
-    
+
     @Test
     public void assertInit() throws NoSuchFieldException, SchedulerException {
         when(schedulerFacade.updateJobConfiguration(liteJobConfig)).thenReturn(liteJobConfig);
