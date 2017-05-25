@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.bbae</groupId>
         <artifactId>elastic-job-common</artifactId>
-        <version>0.1.0</version>
+        <version>add-timezone-SNAPSHOT</version>
     </parent>
     <artifactId>elastic-job-common-core</artifactId>
     <name>${project.artifactId}</name>
