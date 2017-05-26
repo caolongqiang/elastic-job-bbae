@@ -14,7 +14,7 @@ function renderDataSources() {
         search: true,
         showRefresh: true,
         showColumns: true,
-        columns: 
+        columns:
         [{
             field: "name",
             title: "数据源名称",
@@ -197,8 +197,8 @@ function validate() {
                         message: "数据库URL不能为空"
                     },
                     stringLength: {
-                        max: 200,
-                        message: "数据库URL长度不能超过200字符大小"
+                        max: 1000,
+                        message: "数据库URL长度不能超过1000字符大小"
                     }
                 }
             },
@@ -222,11 +222,12 @@ function validate() {
                     stringLength: {
                         max: 50,
                         message: "数据库口令不能超过50字符大小"
-                    },
-                    regexp: {
-                        regexp: /^[\w\.-]+$/,
-                        message: "数据库口令只能使用数字、字母、下划线(_)、短横线(-)和点号(.)"
                     }
+                    // ,
+                    // regexp: {
+                    //     regexp: /^[\w\.-]+$/,
+                    //     message: "数据库口令只能使用数字、字母、下划线(_)、短横线(-)和点号(.)"
+                    // }
                 }
             }
         }
