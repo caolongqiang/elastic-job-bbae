@@ -36,6 +36,7 @@ import com.dangdang.ddframe.job.lite.internal.schedule.LiteJob;
 import com.dangdang.ddframe.job.lite.internal.schedule.LiteJobFacade;
 import com.dangdang.ddframe.job.lite.internal.schedule.SchedulerFacade;
 import com.dangdang.ddframe.job.lite.internal.sharding.ExecutionService;
+import com.dangdang.ddframe.job.lite.internal.sharding.ShardingNode;
 import com.dangdang.ddframe.job.lite.internal.sharding.ShardingService;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
@@ -133,8 +134,10 @@ public class JobScheduler {
 //        }
 
         //如果当前有运行的，需要看当前有没有正在运行的job，如果有的话，就不能主动触发分片
+        ShardingService shardingService = new ShardingService(regCenter, liteJobConfigFromRegCenter.getJobName());
         ExecutionService executionService = new ExecutionService(regCenter, liteJobConfigFromRegCenter.getJobName());
-        if(!executionService.hasRunningItems()){
+        if(!executionService.hasRunningItems() && !shardingService.isNeedSharding() && !shardingService.isShareProcessing()){
+            //触发分片
             jobFacade.getShardingContexts();
         }
     }

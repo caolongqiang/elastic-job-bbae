@@ -43,28 +43,28 @@ import java.util.Map;
 
 /**
  * 作业分片服务.
- * 
+ *
  * @author zhangliang
  */
 @Slf4j
 public final class ShardingService {
-    
+
     private final String jobName;
-    
+
     private final JobNodeStorage jobNodeStorage;
-    
+
     private final LeaderService leaderService;
-    
+
     private final ConfigurationService configService;
-    
+
     private final InstanceService instanceService;
-    
+
     private final ServerService serverService;
-    
+
     private final ExecutionService executionService;
 
     private final JobNodePath jobNodePath;
-    
+
     public ShardingService(final CoordinatorRegistryCenter regCenter, final String jobName) {
         this.jobName = jobName;
         jobNodeStorage = new JobNodeStorage(regCenter, jobName);
@@ -75,26 +75,30 @@ public final class ShardingService {
         executionService = new ExecutionService(regCenter, jobName);
         jobNodePath = new JobNodePath(jobName);
     }
-    
+
     /**
      * 设置需要重新分片的标记.
      */
     public void setReshardingFlag() {
         jobNodeStorage.createJobNodeIfNeeded(ShardingNode.NECESSARY);
     }
-    
+
     /**
      * 判断是否需要重分片.
-     * 
+     *
      * @return 是否需要重分片
      */
     public boolean isNeedSharding() {
         return jobNodeStorage.isJobNodeExisted(ShardingNode.NECESSARY);
     }
-    
+
+    public boolean isShareProcessing(){
+        return jobNodeStorage.isJobNodeExisted(ShardingNode.PROCESSING);
+    }
+
     /**
      * 如果需要分片且当前节点为主节点, 则作业分片.
-     * 
+     *
      * <p>
      * 如果当前无可用节点则不分片.
      * </p>
@@ -118,21 +122,21 @@ public final class ShardingService {
         jobNodeStorage.executeInTransaction(new PersistShardingInfoTransactionExecutionCallback(jobShardingStrategy.sharding(availableJobInstances, jobName, shardingTotalCount)));
         log.debug("Job '{}' sharding complete.", jobName);
     }
-    
+
     private void blockUntilShardingCompleted() {
         while (!leaderService.isLeaderUntilBlock() && (jobNodeStorage.isJobNodeExisted(ShardingNode.NECESSARY) || jobNodeStorage.isJobNodeExisted(ShardingNode.PROCESSING))) {
             log.debug("Job '{}' sleep short time until sharding completed.", jobName);
             BlockUtils.waitingShortTime();
         }
     }
-    
+
     private void waitingOtherJobCompleted() {
         while (executionService.hasRunningItems()) {
             log.debug("Job '{}' sleep short time until other job completed.", jobName);
             BlockUtils.waitingShortTime();
         }
     }
-    
+
     private void resetShardingInfo(final int shardingTotalCount) {
         for (int i = 0; i < shardingTotalCount; i++) {
             jobNodeStorage.removeJobNodeIfExisted(ShardingNode.getInstanceNode(i));
@@ -145,10 +149,10 @@ public final class ShardingService {
             }
         }
     }
-    
+
     /**
      * 获取运行在本作业实例的分片项集合.
-     * 
+     *
      * @return 运行在本作业实例的分片项集合
      */
     public List<Integer> getLocalShardingItems() {
@@ -164,10 +168,10 @@ public final class ShardingService {
         }
         return result;
     }
-    
+
     /**
      * 查询是包含有分片节点的不在线服务器.
-     * 
+     *
      * @return 是包含有分片节点的不在线服务器
      */
     public boolean hasShardingInfoInOfflineServers() {
@@ -180,12 +184,12 @@ public final class ShardingService {
         }
         return false;
     }
-    
+
     @RequiredArgsConstructor
     class PersistShardingInfoTransactionExecutionCallback implements TransactionExecutionCallback {
-        
+
         private final Map<JobInstance, List<Integer>> shardingResults;
-        
+
         @Override
         public void execute(final CuratorTransactionFinal curatorTransactionFinal) throws Exception {
             for (Map.Entry<JobInstance, List<Integer>> entry : shardingResults.entrySet()) {
