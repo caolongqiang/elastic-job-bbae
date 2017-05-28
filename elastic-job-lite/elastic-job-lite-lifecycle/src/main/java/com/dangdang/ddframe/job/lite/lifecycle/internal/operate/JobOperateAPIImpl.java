@@ -83,11 +83,11 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
             for (String each : jobNames) {
                 if (regCenter.isExisted(new JobNodePath(each).getServerNodePath(serverIp.get()))) {
                     persistDisabledOrEnabledJob(each, serverIp.get(), disabled);
+                    if(!disabled){
+                        ConfigurationService configurationService = new ConfigurationService(regCenter, jobName.get());
+                        configurationService.persistStatus(disabled);
+                    }
                 }
-//                if(!disabled){
-//                    ConfigurationService configurationService = new ConfigurationService(regCenter, jobName.get());
-//                    configurationService.persistStatus(disabled);
-//                }
             }
         }
     }

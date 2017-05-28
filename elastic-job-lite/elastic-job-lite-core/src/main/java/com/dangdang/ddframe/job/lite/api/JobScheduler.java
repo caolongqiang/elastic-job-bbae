@@ -35,6 +35,8 @@ import com.dangdang.ddframe.job.lite.internal.schedule.JobShutdownHookPlugin;
 import com.dangdang.ddframe.job.lite.internal.schedule.LiteJob;
 import com.dangdang.ddframe.job.lite.internal.schedule.LiteJobFacade;
 import com.dangdang.ddframe.job.lite.internal.schedule.SchedulerFacade;
+import com.dangdang.ddframe.job.lite.internal.sharding.ExecutionService;
+import com.dangdang.ddframe.job.lite.internal.sharding.ShardingService;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.util.env.IpUtils;
@@ -113,20 +115,28 @@ public class JobScheduler {
         jobScheduleController.scheduleJob(liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getCron(),
                 liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getTimezone());
 
+        //如果是job本身是禁用的，那么需要把所有上线的节点置成disable
         if(liteJobConfigFromRegCenter.isForbidden()){
             JobNodePath jobNodePath = new JobNodePath(liteJobConfigFromRegCenter.getJobName());
             for (String each : regCenter.getChildrenKeys(jobNodePath.getServerNodePath())) {
                 regCenter.persist(jobNodePath.getServerNodePath(each), "DISABLED");
             }
-        }else{
-            JobNodePath jobNodePath = new JobNodePath(liteJobConfigFromRegCenter.getJobName());
-            for (String each : regCenter.getChildrenKeys(jobNodePath.getServerNodePath())) {
-                if(!each.startsWith(IpUtils.getIp())) {
-                    regCenter.persist(jobNodePath.getServerNodePath(each), "DISABLED");
-                }
-            }
         }
-        jobFacade.getShardingContexts();
+//        else{
+//            JobNodePath jobNodePath = new JobNodePath(liteJobConfigFromRegCenter.getJobName());
+//            for (String each : regCenter.getChildrenKeys(jobNodePath.getServerNodePath())) {
+//                if(!each.startsWith(IpUtils.getIp())) {
+//                    regCenter.persist(jobNodePath.getServerNodePath(each), "DISABLED");
+//                }
+//            }
+//
+//        }
+
+        //如果当前有运行的，需要看当前有没有正在运行的job，如果有的话，就不能主动触发分片
+        ExecutionService executionService = new ExecutionService(regCenter, liteJobConfigFromRegCenter.getJobName());
+        if(!executionService.hasRunningItems()){
+            jobFacade.getShardingContexts();
+        }
     }
 
     private JobDetail createJobDetail(final String jobClass) {
