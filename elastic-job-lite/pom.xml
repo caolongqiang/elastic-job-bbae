@@ -4,7 +4,7 @@
     <parent>
         <artifactId>elastic-job</artifactId>
         <groupId>com.bbae</groupId>
-        <version>console20170525-SNAPSHOT</version>
+        <version>1.3</version>
     </parent>
     <packaging>pom</packaging>
     <artifactId>elastic-job-lite</artifactId>

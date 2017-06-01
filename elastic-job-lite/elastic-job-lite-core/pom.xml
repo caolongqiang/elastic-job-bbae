@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.bbae</groupId>
         <artifactId>elastic-job-lite</artifactId>
-        <version>console20170525-SNAPSHOT</version>
+        <version>1.3</version>
     </parent>
     <artifactId>elastic-job-lite-core</artifactId>
     <name>${project.artifactId}</name>
