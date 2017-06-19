@@ -27,20 +27,20 @@ import java.util.List;
 
 /**
  * 数据流作业执行器.
- * 
+ *
  * @author zhangliang
  */
 public final class DataflowJobExecutor extends AbstractElasticJobExecutor {
-    
+
     private final DataflowJob<Object> dataflowJob;
-    
+
     public DataflowJobExecutor(final DataflowJob<Object> dataflowJob, final JobFacade jobFacade) {
         super(jobFacade);
         this.dataflowJob = dataflowJob;
     }
-    
+
     @Override
-    protected void process(final ShardingContext shardingContext) {
+    protected void process(final ShardingContext shardingContext) throws Exception {
         DataflowJobConfiguration dataflowConfig = (DataflowJobConfiguration) getJobRootConfig().getTypeConfig();
         if (dataflowConfig.isStreamingProcess()) {
             streamingExecute(shardingContext);
@@ -48,8 +48,8 @@ public final class DataflowJobExecutor extends AbstractElasticJobExecutor {
             oneOffExecute(shardingContext);
         }
     }
-    
-    private void streamingExecute(final ShardingContext shardingContext) {
+
+    private void streamingExecute(final ShardingContext shardingContext) throws Exception {
         List<Object> data = fetchData(shardingContext);
         while (null != data && !data.isEmpty()) {
             processData(shardingContext, data);
@@ -59,19 +59,19 @@ public final class DataflowJobExecutor extends AbstractElasticJobExecutor {
             data = fetchData(shardingContext);
         }
     }
-    
-    private void oneOffExecute(final ShardingContext shardingContext) {
+
+    private void oneOffExecute(final ShardingContext shardingContext) throws Exception {
         List<Object> data = fetchData(shardingContext);
         if (null != data && !data.isEmpty()) {
             processData(shardingContext, data);
         }
     }
-    
-    private List<Object> fetchData(final ShardingContext shardingContext) {
+
+    private List<Object> fetchData(final ShardingContext shardingContext) throws Exception {
         return dataflowJob.fetchData(shardingContext);
     }
-    
-    private void processData(final ShardingContext shardingContext, final List<Object> data) {
+
+    private void processData(final ShardingContext shardingContext, final List<Object> data) throws Exception {
         dataflowJob.processData(shardingContext, data);
     }
 }
