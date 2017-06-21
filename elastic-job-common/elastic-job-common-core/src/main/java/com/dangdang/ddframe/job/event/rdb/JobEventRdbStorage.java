@@ -35,6 +35,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -390,5 +391,34 @@ final class JobEventRdbStorage {
             log.error(ex.getMessage());
         }
         return result;
+    }
+
+    public void deleteHistoryJobExecutionEvent(){
+        String sql = String.format("delete from %s where start_time < ?", TABLE_JOB_EXECUTION_LOG);
+        try {
+            Connection conn = dataSource.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MONTH, -1);
+            preparedStatement.setTimestamp(0, new Timestamp(calendar.getTime().getTime()));
+            preparedStatement.execute(sql);
+        }catch (Exception e){
+
+        }
+    }
+
+
+    public void deleteHistoryJobStatusTraceEvent(){
+        String sql = String.format("delete from %s where creation_time < ?", TABLE_JOB_STATUS_TRACE_LOG);
+        try {
+            Connection conn = dataSource.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MONTH, -1);
+            preparedStatement.setTimestamp(0, new Timestamp(calendar.getTime().getTime()));
+            preparedStatement.execute(sql);
+        }catch (Exception e){
+
+        }
     }
 }

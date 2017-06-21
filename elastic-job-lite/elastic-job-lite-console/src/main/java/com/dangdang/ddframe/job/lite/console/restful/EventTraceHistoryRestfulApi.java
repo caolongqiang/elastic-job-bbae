@@ -23,9 +23,11 @@ import com.dangdang.ddframe.job.event.rdb.JobEventRdbSearch.Result;
 import com.dangdang.ddframe.job.event.type.JobExecutionEvent;
 import com.dangdang.ddframe.job.event.type.JobStatusTraceEvent;
 import com.dangdang.ddframe.job.lite.console.domain.EventTraceDataSourceConfiguration;
+import com.dangdang.ddframe.job.lite.console.domain.RegistryCenterConfiguration;
 import com.dangdang.ddframe.job.lite.console.service.EventTraceDataSourceConfigurationService;
 import com.dangdang.ddframe.job.lite.console.service.impl.EventTraceDataSourceConfigurationServiceImpl;
 import com.dangdang.ddframe.job.lite.console.util.SessionEventTraceDataSourceConfiguration;
+import com.dangdang.ddframe.job.lite.console.util.SessionRegistryCenterConfiguration;
 import com.google.common.base.Strings;
 import org.apache.commons.dbcp.BasicDataSource;
 
@@ -51,14 +53,16 @@ import java.util.Map;
  */
 @Path("/event-trace")
 public final class EventTraceHistoryRestfulApi {
-    
+
     private EventTraceDataSourceConfiguration eventTraceDataSourceConfiguration = SessionEventTraceDataSourceConfiguration.getEventTraceDataSourceConfiguration();
-    
+
     private EventTraceDataSourceConfigurationService eventTraceDataSourceConfigurationService = new EventTraceDataSourceConfigurationServiceImpl();
-    
+
+    private RegistryCenterConfiguration regCenterConfig = SessionRegistryCenterConfiguration.getRegistryCenterConfiguration();
+
     /**
      * 查询作业执行事件.
-     * 
+     *
      * @param uriInfo 查询条件
      * @return 运行痕迹事件结果集
      * @throws ParseException 解析异常
@@ -72,9 +76,9 @@ public final class EventTraceHistoryRestfulApi {
             return new Result<>(0, new ArrayList<JobExecutionEvent>());
         }
         JobEventRdbSearch jobEventRdbSearch = new JobEventRdbSearch(setUpEventTraceDataSource());
-        return jobEventRdbSearch.findJobExecutionEvents(buildCondition(uriInfo, new String[]{"jobName", "ip", "isSuccess"}));
+        return jobEventRdbSearch.findJobExecutionEvents(buildCondition(uriInfo, new String[]{"jobName", "ip", "isSuccess", "nameSpace"}));
     }
-    
+
     /**
      * 查询作业状态事件.
      *
@@ -91,9 +95,9 @@ public final class EventTraceHistoryRestfulApi {
             return new Result<>(0, new ArrayList<JobStatusTraceEvent>());
         }
         JobEventRdbSearch jobEventRdbSearch = new JobEventRdbSearch(setUpEventTraceDataSource());
-        return jobEventRdbSearch.findJobStatusTraceEvents(buildCondition(uriInfo, new String[]{"jobName", "source", "executionType", "state"}));
+        return jobEventRdbSearch.findJobStatusTraceEvents(buildCondition(uriInfo, new String[]{"jobName", "source", "executionType", "state" ,"nameSpace"}));
     }
-    
+
     private DataSource setUpEventTraceDataSource() {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(eventTraceDataSourceConfiguration.getDriver());
@@ -102,7 +106,7 @@ public final class EventTraceHistoryRestfulApi {
         result.setPassword(eventTraceDataSourceConfiguration.getPassword());
         return result;
     }
-    
+
     private Condition buildCondition(final UriInfo info, final String[] params) throws ParseException {
         int perPage = 10;
         int page = 1;
@@ -126,12 +130,19 @@ public final class EventTraceHistoryRestfulApi {
         }
         return new Condition(perPage, page, sort, order, startTime, endTime, fields);
     }
-    
+
     private Map<String, Object> getQueryParameters(final UriInfo info, final String[] params) {
         final Map<String, Object> result = new HashMap<>();
         for (String each : params) {
             if (!Strings.isNullOrEmpty(info.getQueryParameters().getFirst(each))) {
                 result.put(each, info.getQueryParameters().getFirst(each));
+            }
+            if(each.equalsIgnoreCase("nameSpace")){
+                String nameSpace = regCenterConfig.getNamespace();
+                if(nameSpace.startsWith("/")){
+                    nameSpace = nameSpace.substring(1);
+                }
+                result.put("nameSpace", nameSpace);
             }
         }
         return result;

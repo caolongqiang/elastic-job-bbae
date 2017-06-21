@@ -30,20 +30,22 @@ import java.sql.SQLException;
  * @author caohao
  */
 public final class JobEventRdbListener extends JobEventRdbIdentity implements JobEventListener {
-    
+
     private final JobEventRdbStorage repository;
-    
+
     public JobEventRdbListener(final DataSource dataSource) throws SQLException {
         repository = new JobEventRdbStorage(dataSource);
     }
-    
+
     @Override
     public void listen(final JobExecutionEvent executionEvent) {
         repository.addJobExecutionEvent(executionEvent);
+        repository.deleteHistoryJobExecutionEvent();
     }
-    
+
     @Override
     public void listen(final JobStatusTraceEvent jobStatusTraceEvent) {
         repository.addJobStatusTraceEvent(jobStatusTraceEvent);
+        repository.deleteHistoryJobStatusTraceEvent();
     }
 }
