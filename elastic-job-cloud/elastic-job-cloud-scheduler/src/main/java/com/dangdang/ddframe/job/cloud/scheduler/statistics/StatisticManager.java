@@ -294,6 +294,6 @@ public final class StatisticManager {
     }
 
     public String getNameSpace(){
-        return registryCenter.getNameSpace();
+        return registryCenter.getNameSpaceOnly();
     }
 }

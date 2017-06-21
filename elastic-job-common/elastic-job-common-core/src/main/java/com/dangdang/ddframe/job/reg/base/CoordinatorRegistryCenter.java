@@ -100,5 +100,5 @@ public interface CoordinatorRegistryCenter extends RegistryCenter {
      * 获取namespace
      * @return
      */
-    String getNameSpace();
+    String getNameSpaceOnly();
 }

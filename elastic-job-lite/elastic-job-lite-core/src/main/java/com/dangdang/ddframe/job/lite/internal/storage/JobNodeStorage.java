@@ -53,7 +53,7 @@ public final class JobNodeStorage {
     }
 
     public String getNameSpace(){
-        return regCenter.getNameSpace();
+        return regCenter.getNameSpaceOnly();
     }
 
     /**

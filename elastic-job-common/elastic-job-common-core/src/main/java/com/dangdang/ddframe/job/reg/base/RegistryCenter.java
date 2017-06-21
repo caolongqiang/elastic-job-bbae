@@ -93,5 +93,5 @@ public interface RegistryCenter {
      * 获取namespace
      * @return
      */
-    String getNameSpace();
+    String getNameSpaceOnly();
 }

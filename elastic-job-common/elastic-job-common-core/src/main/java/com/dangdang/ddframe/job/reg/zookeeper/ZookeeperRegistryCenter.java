@@ -199,7 +199,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         return 0;
     }
 
-    public String getNameSpace() {
+    private String getNameSpace() {
         String result = this.getZkConfig().getNamespace();
         return Strings.isNullOrEmpty(result) ? "" : "/" + result;
     }
@@ -336,6 +336,9 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         return caches.get(cachePath + "/");
     }
 
-
+    @Override
+    public String getNameSpaceOnly(){
+        return this.getZkConfig().getNamespace();
+    }
 
 }
