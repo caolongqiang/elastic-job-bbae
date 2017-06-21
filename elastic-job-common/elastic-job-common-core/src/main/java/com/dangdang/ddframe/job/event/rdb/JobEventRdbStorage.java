@@ -400,7 +400,7 @@ final class JobEventRdbStorage {
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.MONTH, -1);
-            preparedStatement.setTimestamp(0, new Timestamp(calendar.getTime().getTime()));
+            preparedStatement.setTimestamp(1, new Timestamp(calendar.getTime().getTime()));
             preparedStatement.execute(sql);
         }catch (Exception e){
 
@@ -415,7 +415,7 @@ final class JobEventRdbStorage {
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.MONTH, -1);
-            preparedStatement.setTimestamp(0, new Timestamp(calendar.getTime().getTime()));
+            preparedStatement.setTimestamp(1, new Timestamp(calendar.getTime().getTime()));
             preparedStatement.execute(sql);
         }catch (Exception e){
 
