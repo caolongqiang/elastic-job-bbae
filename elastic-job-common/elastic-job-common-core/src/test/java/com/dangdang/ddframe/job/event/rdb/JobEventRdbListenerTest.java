@@ -16,7 +16,7 @@
  */
 
 package com.dangdang.ddframe.job.event.rdb;
-        
+
 import com.dangdang.ddframe.job.context.ExecutionType;
 import com.dangdang.ddframe.job.event.JobEventBus;
 import com.dangdang.ddframe.job.event.JobEventListenerConfigurationException;
@@ -40,17 +40,17 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class JobEventRdbListenerTest {
-    
+
     private static final String JOB_NAME = "test_rdb_event_listener";
-    
+
     @Mock
     private JobEventRdbConfiguration jobEventRdbConfiguration;
-    
+
     @Mock
     private JobEventRdbStorage repository;
-    
+
     private JobEventBus jobEventBus;
-    
+
     @Before
     public void setUp() throws JobEventListenerConfigurationException, SQLException, NoSuchFieldException {
         BasicDataSource dataSource = new BasicDataSource();
@@ -63,18 +63,18 @@ public final class JobEventRdbListenerTest {
         when(jobEventRdbConfiguration.createJobEventListener()).thenReturn(jobEventRdbListener);
         jobEventBus = new JobEventBus(jobEventRdbConfiguration);
     }
-    
+
     @Test
     public void assertPostJobExecutionEvent() {
-        JobExecutionEvent jobExecutionEvent = new JobExecutionEvent("fake_task_id", JOB_NAME, JobExecutionEvent.ExecutionSource.NORMAL_TRIGGER, 0);
+        JobExecutionEvent jobExecutionEvent = new JobExecutionEvent("fake_task_id", "", JOB_NAME, JobExecutionEvent.ExecutionSource.NORMAL_TRIGGER, 0);
         jobEventBus.post(jobExecutionEvent);
         verify(repository, atMost(1)).addJobExecutionEvent(jobExecutionEvent);
     }
-    
+
     @Test
     public void assertPostJobStatusTraceEvent() {
         JobStatusTraceEvent jobStatusTraceEvent = new JobStatusTraceEvent(
-                JOB_NAME, "fake_task_id", "fake_slave_id",  Source.LITE_EXECUTOR, ExecutionType.READY, "0", State.TASK_RUNNING, "message is empty.");
+                JOB_NAME, "", "fake_task_id", "fake_slave_id",  Source.LITE_EXECUTOR, ExecutionType.READY, "0", State.TASK_RUNNING, "message is empty.");
         jobEventBus.post(jobStatusTraceEvent);
         verify(repository, atMost(1)).addJobStatusTraceEvent(jobStatusTraceEvent);
     }
