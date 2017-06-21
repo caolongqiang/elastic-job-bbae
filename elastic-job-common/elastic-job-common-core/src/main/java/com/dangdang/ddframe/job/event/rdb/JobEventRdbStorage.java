@@ -395,12 +395,11 @@ final class JobEventRdbStorage {
     }
 
     public void deleteHistoryJobExecutionEvent(){
-        String sql = String.format("delete from %s where start_time < ?", TABLE_JOB_EXECUTION_LOG);
+        String sql = String.format("delete from %s where start_time < DATE_SUB(current_timestamp, INTERVAL 31 DAY ) ", TABLE_JOB_EXECUTION_LOG);
         log.info(sql);
         try {
             Connection conn = dataSource.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setDate(1, getLastMonth());
             preparedStatement.execute(sql);
         }catch (Exception e){
             log.error(e.getMessage());
@@ -409,29 +408,14 @@ final class JobEventRdbStorage {
 
 
     public void deleteHistoryJobStatusTraceEvent(){
-        String sql = String.format("delete from %s where creation_time < ?", TABLE_JOB_STATUS_TRACE_LOG);
-        log.info(sql);
+        String sql = String.format("delete from %s where creation_time < DATE_SUB(current_timestamp, INTERVAL 31 DAY ) ", TABLE_JOB_STATUS_TRACE_LOG);
         try {
             Connection conn = dataSource.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setDate(1, getLastMonth());
             preparedStatement.execute(sql);
         }catch (Exception e){
             log.error(e.getMessage());
         }
     }
 
-    private java.sql.Date getLastMonth(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.MONTH, -1);
-
-        Date date = calendar.getTime();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        log.info("date origin:",simpleDateFormat.format(date));
-
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-        log.info("date:",simpleDateFormat.format(sqlDate));
-        return sqlDate;
-    }
 }
