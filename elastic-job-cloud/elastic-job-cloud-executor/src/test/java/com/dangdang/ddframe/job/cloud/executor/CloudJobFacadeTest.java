@@ -156,7 +156,7 @@ public class CloudJobFacadeTest {
 
     @Test
     public void assertPostJobExecutionEvent() {
-        JobExecutionEvent jobExecutionEvent = new JobExecutionEvent("fake_task_id", "test_job", "", ExecutionSource.NORMAL_TRIGGER, 0);
+        JobExecutionEvent jobExecutionEvent = new JobExecutionEvent("fake_task_id", "", "test_job", ExecutionSource.NORMAL_TRIGGER, 0);
         jobFacade.postJobExecutionEvent(jobExecutionEvent);
         verify(eventBus).post(jobExecutionEvent);
     }

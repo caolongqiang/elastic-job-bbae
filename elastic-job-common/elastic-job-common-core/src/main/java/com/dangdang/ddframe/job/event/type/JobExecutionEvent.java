@@ -71,7 +71,7 @@ public final class JobExecutionEvent implements JobEvent {
      * @return 作业执行事件
      */
     public JobExecutionEvent executionSuccess() {
-        JobExecutionEvent result = new JobExecutionEvent(id, hostname, ip, taskId, jobName, nameSpace, source, shardingItem, startTime, completeTime, success, failureCause);
+        JobExecutionEvent result = new JobExecutionEvent(id, hostname, ip, taskId, nameSpace, jobName, source, shardingItem, startTime, completeTime, success, failureCause);
         result.setCompleteTime(new Date());
         result.setSuccess(true);
         return result;
@@ -84,7 +84,7 @@ public final class JobExecutionEvent implements JobEvent {
      * @return 作业执行事件
      */
     public JobExecutionEvent executionFailure(final Throwable failureCause) {
-        JobExecutionEvent result = new JobExecutionEvent(id, hostname, ip, taskId, jobName, nameSpace, source, shardingItem, startTime, completeTime, success, new JobExecutionEventThrowable(failureCause));
+        JobExecutionEvent result = new JobExecutionEvent(id, hostname, ip, taskId, nameSpace, jobName, source, shardingItem, startTime, completeTime, success, new JobExecutionEventThrowable(failureCause));
         result.setCompleteTime(new Date());
         result.setSuccess(false);
         return result;

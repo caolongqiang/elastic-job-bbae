@@ -93,7 +93,7 @@ public final class JobEventRdbSearch {
                 ) {
             while (resultSet.next()) {
                 JobExecutionEvent jobExecutionEvent = new JobExecutionEvent(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4),
-                        resultSet.getString(5), resultSet.getString(12),JobExecutionEvent.ExecutionSource.valueOf(resultSet.getString(6)), Integer.valueOf(resultSet.getString(7)),
+                    resultSet.getString(12),resultSet.getString(5), JobExecutionEvent.ExecutionSource.valueOf(resultSet.getString(6)), Integer.valueOf(resultSet.getString(7)),
                         new Date(resultSet.getTimestamp(8).getTime()), resultSet.getTimestamp(9) == null ? null : new Date(resultSet.getTimestamp(9).getTime()),
                         resultSet.getBoolean(10), new JobExecutionEventThrowable(null, resultSet.getString(11))
                         );
@@ -114,7 +114,7 @@ public final class JobEventRdbSearch {
                 ResultSet resultSet = preparedStatement.executeQuery()
                 ) {
             while (resultSet.next()) {
-                JobStatusTraceEvent jobStatusTraceEvent = new JobStatusTraceEvent(resultSet.getString(1),resultSet.getString(12),  resultSet.getString(2), resultSet.getString(3), resultSet.getString(4),
+                JobStatusTraceEvent jobStatusTraceEvent = new JobStatusTraceEvent(resultSet.getString(1), resultSet.getString(2), resultSet.getString(12), resultSet.getString(3), resultSet.getString(4),
                         resultSet.getString(5), Source.valueOf(resultSet.getString(6)), ExecutionType.valueOf(resultSet.getString(7)), resultSet.getString(8),
                         State.valueOf(resultSet.getString(9)), resultSet.getString(10), new Date(resultSet.getTimestamp(11).getTime()));
                 result.add(jobStatusTraceEvent);
