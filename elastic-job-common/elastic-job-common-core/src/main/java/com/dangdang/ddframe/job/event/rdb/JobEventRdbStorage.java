@@ -427,8 +427,10 @@ final class JobEventRdbStorage {
         calendar.add(Calendar.MONTH, -1);
 
         Date date = calendar.getTime();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        log.info("date origin:",simpleDateFormat.format(date));
+
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
         log.info("date:",simpleDateFormat.format(sqlDate));
         return sqlDate;
     }
