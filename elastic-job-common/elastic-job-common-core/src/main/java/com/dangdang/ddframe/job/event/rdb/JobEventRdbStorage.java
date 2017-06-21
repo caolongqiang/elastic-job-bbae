@@ -36,6 +36,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -399,6 +400,7 @@ final class JobEventRdbStorage {
             Connection conn = dataSource.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
             calendar.add(Calendar.MONTH, -1);
             preparedStatement.setTimestamp(1, new Timestamp(calendar.getTime().getTime()));
             preparedStatement.execute(sql);
@@ -414,6 +416,7 @@ final class JobEventRdbStorage {
             Connection conn = dataSource.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
             calendar.add(Calendar.MONTH, -1);
             preparedStatement.setTimestamp(1, new Timestamp(calendar.getTime().getTime()));
             preparedStatement.execute(sql);
