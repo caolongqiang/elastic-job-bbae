@@ -136,6 +136,7 @@ final class JobEventRdbStorage {
                 + "`state` VARCHAR(20) NOT NULL, "
                 + "`message` VARCHAR(4000) NULL, "
                 + "`creation_time` TIMESTAMP NULL, "
+                + "`name_space` VARCHAR(50) NULL, "
                 + "PRIMARY KEY (`id`));";
         try (PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.execute();
@@ -165,6 +166,8 @@ final class JobEventRdbStorage {
         boolean result = false;
         String sql = "INSERT INTO `" + TABLE_JOB_EXECUTION_LOG + "` (`id`, `job_name`, `task_id`, `hostname`, `ip`, `sharding_item`, `execution_source`, `is_success`, `start_time`, `name_space`) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        log.info(sql);
         try (
                 Connection conn = dataSource.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -199,6 +202,8 @@ final class JobEventRdbStorage {
     private boolean updateJobExecutionEventWhenSuccess(final JobExecutionEvent jobExecutionEvent) {
         boolean result = false;
         String sql = "UPDATE `" + TABLE_JOB_EXECUTION_LOG + "` SET `is_success` = ?, `complete_time` = ? WHERE id = ?";
+        log.info(sql);
+
         try (
                 Connection conn = dataSource.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -220,6 +225,8 @@ final class JobEventRdbStorage {
         boolean result = false;
         String sql = "INSERT INTO `" + TABLE_JOB_EXECUTION_LOG + "` (`id`, `job_name`, `task_id`, `hostname`, `ip`, `sharding_item`, `execution_source`, `is_success`, `start_time`, `complete_time`, `name_space`) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        log.info(sql);
+
         try (
                 Connection conn = dataSource.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -250,6 +257,8 @@ final class JobEventRdbStorage {
     private boolean updateJobExecutionEventFailure(final JobExecutionEvent jobExecutionEvent) {
         boolean result = false;
         String sql = "UPDATE `" + TABLE_JOB_EXECUTION_LOG + "` SET `is_success` = ?, `complete_time` = ?, `failure_cause` = ? WHERE id = ?";
+        log.info(sql);
+
         try (
                 Connection conn = dataSource.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -272,6 +281,8 @@ final class JobEventRdbStorage {
         boolean result = false;
         String sql = "INSERT INTO `" + TABLE_JOB_EXECUTION_LOG + "` (`id`, `job_name`, `task_id`, `hostname`, `ip`, `sharding_item`, `execution_source`, `failure_cause`, `is_success`, `start_time`, `name_space`) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        log.info(sql);
+
         try (
                 Connection conn = dataSource.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -307,6 +318,8 @@ final class JobEventRdbStorage {
         boolean result = false;
         String sql = "INSERT INTO `" + TABLE_JOB_STATUS_TRACE_LOG + "` (`id`, `job_name`, `original_task_id`, `task_id`, `slave_id`, `source`, `execution_type`, `sharding_item`,  "
                 + "`state`, `message`, `creation_time`, `name_space`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        log.info(sql);
+
         try (
                 Connection conn = dataSource.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -334,6 +347,8 @@ final class JobEventRdbStorage {
 
     private String getOriginalTaskId(final String taskId) {
         String sql = String.format("SELECT original_task_id FROM %s WHERE task_id = '%s' and state='%s'", TABLE_JOB_STATUS_TRACE_LOG, taskId, State.TASK_STAGING);
+        log.info(sql);
+
         String result = "";
         try (
                 Connection conn = dataSource.getConnection();
@@ -356,6 +371,8 @@ final class JobEventRdbStorage {
 
     List<JobStatusTraceEvent> getJobStatusTraceEvents(final String taskId) {
         String sql = String.format("SELECT * FROM %s WHERE task_id = '%s'", TABLE_JOB_STATUS_TRACE_LOG, taskId);
+        log.info(sql);
+
         List<JobStatusTraceEvent> result = new ArrayList<>();
         try (
                 Connection conn = dataSource.getConnection();
