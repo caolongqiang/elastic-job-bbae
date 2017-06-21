@@ -57,21 +57,21 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatisticManager {
-    
+
     private static volatile StatisticManager instance;
-    
+
     private final CoordinatorRegistryCenter registryCenter;
-    
+
     private final CloudJobConfigurationService configurationService;
-    
+
     private final Optional<JobEventRdbConfiguration> jobEventRdbConfiguration;
-    
+
     private final StatisticsScheduler scheduler;
-    
+
     private final Map<StatisticInterval, TaskResultMetaData> statisticData;
-    
+
     private StatisticRdbRepository rdbRepository;
-    
+
     private StatisticManager(final CoordinatorRegistryCenter registryCenter, final Optional<JobEventRdbConfiguration> jobEventRdbConfiguration,
                              final StatisticsScheduler scheduler, final Map<StatisticInterval, TaskResultMetaData> statisticData) {
         this.registryCenter = registryCenter;
@@ -80,10 +80,10 @@ public final class StatisticManager {
         this.scheduler = scheduler;
         this.statisticData = statisticData;
     }
-    
+
     /**
      * 获取统计作业调度管理器.
-     * 
+     *
      * @param regCenter 注册中心
      * @param jobEventRdbConfiguration 作业数据库事件配置
      * @return 调度管理器对象
@@ -103,7 +103,7 @@ public final class StatisticManager {
         }
         return instance;
     }
-    
+
     private static void init() {
         if (instance.jobEventRdbConfiguration.isPresent()) {
             try {
@@ -113,7 +113,7 @@ public final class StatisticManager {
             }
         }
     }
-    
+
     /**
      * 启动统计作业调度.
      */
@@ -127,14 +127,14 @@ public final class StatisticManager {
             scheduler.register(new RegisteredJobStatisticJob(configurationService, rdbRepository));
         }
     }
-    
+
     /**
      * 停止统计作业调度.
      */
     public void shutdown() {
         scheduler.shutdown();
     }
-    
+
     /**
      * 任务运行成功.
      */
@@ -143,7 +143,7 @@ public final class StatisticManager {
         statisticData.get(StatisticInterval.HOUR).incrementAndGetSuccessCount();
         statisticData.get(StatisticInterval.DAY).incrementAndGetSuccessCount();
     }
-    
+
     /**
      * 作业运行失败.
      */
@@ -152,14 +152,14 @@ public final class StatisticManager {
         statisticData.get(StatisticInterval.HOUR).incrementAndGetFailedCount();
         statisticData.get(StatisticInterval.DAY).incrementAndGetFailedCount();
     }
-    
+
     private boolean isRdbConfigured() {
         return null != rdbRepository;
     }
-    
+
     /**
      * 获取最近一周的任务运行结果统计数据.
-     * 
+     *
      * @return 任务运行结果统计数据对象
      */
     public TaskResultStatistics getTaskResultStatisticsWeekly() {
@@ -168,10 +168,10 @@ public final class StatisticManager {
         }
         return rdbRepository.getSummedTaskResultStatistics(StatisticTimeUtils.getStatisticTime(StatisticInterval.DAY, -7), StatisticInterval.DAY);
     }
-    
+
     /**
      * 获取自上线以来的任务运行结果统计数据.
-     * 
+     *
      * @return 任务运行结果统计数据对象
      */
     public TaskResultStatistics getTaskResultStatisticsSinceOnline() {
@@ -180,10 +180,10 @@ public final class StatisticManager {
         }
         return rdbRepository.getSummedTaskResultStatistics(getOnlineDate(), StatisticInterval.DAY);
     }
-    
+
     /**
      * 获取最近一个统计周期的任务运行结果统计数据.
-     * 
+     *
      * @param statisticInterval 统计周期
      * @return 任务运行结果统计数据对象
      */
@@ -196,10 +196,10 @@ public final class StatisticManager {
         }
         return new TaskResultStatistics(0, 0, statisticInterval, new Date());
     }
-    
+
     /**
      * 获取最近一天的任务运行结果统计数据集合.
-     * 
+     *
      * @return 任务运行结果统计数据对象集合
      */
     public List<TaskResultStatistics> findTaskResultStatisticsDaily() {
@@ -208,10 +208,10 @@ public final class StatisticManager {
         }
         return rdbRepository.findTaskResultStatistics(StatisticTimeUtils.getStatisticTime(StatisticInterval.HOUR, -24), StatisticInterval.MINUTE);
     }
-    
+
     /**
      * 获取作业类型统计数据.
-     * 
+     *
      * @return 作业类型统计数据对象
      */
     public JobTypeStatistics getJobTypeStatistics() {
@@ -229,10 +229,10 @@ public final class StatisticManager {
         }
         return new JobTypeStatistics(scriptJobCnt, simpleJobCnt, dataflowJobCnt);
     }
-    
+
     /**
      * 获取作业执行类型统计数据.
-     * 
+     *
      * @return 作业执行类型统计数据对象
      */
     public JobExecutionTypeStatistics getJobExecutionTypeStatistics() {
@@ -247,10 +247,10 @@ public final class StatisticManager {
         }
         return new JobExecutionTypeStatistics(transientJobCnt, daemonJobCnt);
     }
-    
+
     /**
      * 获取最近一周的运行中的任务统计数据集合.
-     * 
+     *
      * @return 运行中的任务统计数据对象集合
      */
     public List<TaskRunningStatistics> findTaskRunningStatisticsWeekly() {
@@ -259,10 +259,10 @@ public final class StatisticManager {
         }
         return rdbRepository.findTaskRunningStatistics(StatisticTimeUtils.getStatisticTime(StatisticInterval.DAY, -7));
     }
-    
+
     /**
      * 获取最近一周的运行中的作业统计数据集合.
-     * 
+     *
      * @return 运行中的任务统计数据对象集合
      */
     public List<JobRunningStatistics> findJobRunningStatisticsWeekly() {
@@ -271,10 +271,10 @@ public final class StatisticManager {
         }
         return rdbRepository.findJobRunningStatistics(StatisticTimeUtils.getStatisticTime(StatisticInterval.DAY, -7));
     }
-    
+
     /**
      * 获取自上线以来的运行中的任务统计数据集合.
-     * 
+     *
      * @return 运行中的任务统计数据对象集合
      */
     public List<JobRegisterStatistics> findJobRegisterStatisticsSinceOnline() {
@@ -283,7 +283,7 @@ public final class StatisticManager {
         }
         return rdbRepository.findJobRegisterStatistics(getOnlineDate());
     }
-    
+
     private Date getOnlineDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -291,5 +291,9 @@ public final class StatisticManager {
         } catch (final ParseException ex) {
             return null;
         }
+    }
+
+    public String getNameSpace(){
+        return registryCenter.getNameSpace();
     }
 }

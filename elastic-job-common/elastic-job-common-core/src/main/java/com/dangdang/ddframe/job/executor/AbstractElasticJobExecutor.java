@@ -102,13 +102,13 @@ public abstract class AbstractElasticJobExecutor {
         }
         ShardingContexts shardingContexts = jobFacade.getShardingContexts();
         if (shardingContexts.isAllowSendJobEvent()) {
-            jobFacade.postJobStatusTraceEvent(shardingContexts.getTaskId(), State.TASK_STAGING, String.format("Job '%s' execute begin.", jobName));
+            jobFacade.postJobStatusTraceEvent(shardingContexts.getTaskId(), State.TASK_STAGING, String.format("Job '%s' execute begin.", jobName), shardingContexts.getNameSpace());
         }
         if (jobFacade.misfireIfRunning(shardingContexts.getShardingItemParameters().keySet())) {
             if (shardingContexts.isAllowSendJobEvent()) {
                 jobFacade.postJobStatusTraceEvent(shardingContexts.getTaskId(), State.TASK_FINISHED, String.format(
                         "Previous job '%s' - shardingItems '%s' is still running, misfired job will start after previous job completed.", jobName,
-                        shardingContexts.getShardingItemParameters().keySet()));
+                        shardingContexts.getShardingItemParameters().keySet()), shardingContexts.getNameSpace());
             }
             return;
         }
@@ -138,14 +138,14 @@ public abstract class AbstractElasticJobExecutor {
     private void execute(final ShardingContexts shardingContexts, final JobExecutionEvent.ExecutionSource executionSource) {
         if (shardingContexts.getShardingItemParameters().isEmpty()) {
             if (shardingContexts.isAllowSendJobEvent()) {
-                jobFacade.postJobStatusTraceEvent(shardingContexts.getTaskId(), State.TASK_FINISHED, String.format("Sharding item for job '%s' is empty.", jobName));
+                jobFacade.postJobStatusTraceEvent(shardingContexts.getTaskId(), State.TASK_FINISHED, String.format("Sharding item for job '%s' is empty.", jobName), shardingContexts.getNameSpace());
             }
             return;
         }
         jobFacade.registerJobBegin(shardingContexts);
         String taskId = shardingContexts.getTaskId();
         if (shardingContexts.isAllowSendJobEvent()) {
-            jobFacade.postJobStatusTraceEvent(taskId, State.TASK_RUNNING, "");
+            jobFacade.postJobStatusTraceEvent(taskId, State.TASK_RUNNING, "", shardingContexts.getNameSpace());
         }
         try {
             process(shardingContexts, executionSource);
@@ -154,11 +154,11 @@ public abstract class AbstractElasticJobExecutor {
             jobFacade.registerJobCompleted(shardingContexts);
             if (itemErrorMessages.isEmpty()) {
                 if (shardingContexts.isAllowSendJobEvent()) {
-                    jobFacade.postJobStatusTraceEvent(taskId, State.TASK_FINISHED, "");
+                    jobFacade.postJobStatusTraceEvent(taskId, State.TASK_FINISHED, "", shardingContexts.getNameSpace());
                 }
             } else {
                 if (shardingContexts.isAllowSendJobEvent()) {
-                    jobFacade.postJobStatusTraceEvent(taskId, State.TASK_ERROR, itemErrorMessages.toString());
+                    jobFacade.postJobStatusTraceEvent(taskId, State.TASK_ERROR, itemErrorMessages.toString(), shardingContexts.getNameSpace());
                 }
             }
         }
@@ -168,13 +168,13 @@ public abstract class AbstractElasticJobExecutor {
         Collection<Integer> items = shardingContexts.getShardingItemParameters().keySet();
         if (1 == items.size()) {
             int item = shardingContexts.getShardingItemParameters().keySet().iterator().next();
-            JobExecutionEvent jobExecutionEvent =  new JobExecutionEvent(shardingContexts.getTaskId(), jobName, executionSource, item);
+            JobExecutionEvent jobExecutionEvent =  new JobExecutionEvent(shardingContexts.getTaskId(), jobName, shardingContexts.getNameSpace(), executionSource, item);
             process(shardingContexts, item, jobExecutionEvent);
             return;
         }
         final CountDownLatch latch = new CountDownLatch(items.size());
         for (final int each : items) {
-            final JobExecutionEvent jobExecutionEvent = new JobExecutionEvent(shardingContexts.getTaskId(), jobName, executionSource, each);
+            final JobExecutionEvent jobExecutionEvent = new JobExecutionEvent(shardingContexts.getTaskId(), jobName, shardingContexts.getNameSpace(), executionSource, each);
             if (executorService.isShutdown()) {
                 return;
             }
@@ -220,5 +220,7 @@ public abstract class AbstractElasticJobExecutor {
         }
     }
 
+
     protected abstract void process(ShardingContext shardingContext) throws Exception;
+
 }

@@ -19,34 +19,36 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 public final class JobStatusTraceEvent implements JobEvent {
-    
+
     private String id = UUID.randomUUID().toString();
-    
+
     private final String jobName;
-    
+
+    private final String nameSpace;
+
     @Setter
     private String originalTaskId = "";
-    
+
     private final String taskId;
-    
+
     private final String slaveId;
-    
+
     private final Source source;
-    
+
     private final ExecutionType executionType;
-    
+
     private final String shardingItems;
-    
+
     private final State state;
-    
+
     private final String message;
-    
+
     private Date creationTime = new Date();
-    
+
     public enum State {
         TASK_STAGING, TASK_RUNNING, TASK_FINISHED, TASK_KILLED, TASK_LOST, TASK_FAILED, TASK_ERROR
     }
-    
+
     public enum Source {
         CLOUD_SCHEDULER, CLOUD_EXECUTOR, LITE_EXECUTOR
     }

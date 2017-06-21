@@ -36,36 +36,36 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class WrongJobExecutorTest {
-    
+
     @Mock
     private JobFacade jobFacade;
-    
+
     private SimpleJobExecutor wrongSimpleJobExecutor;
-    
+
     @Before
     public void setUp() throws NoSuchFieldException {
         when(jobFacade.loadJobRootConfiguration(true)).thenReturn(new TestSimpleJobConfiguration());
         wrongSimpleJobExecutor = new SimpleJobExecutor(new TestWrongJob(), jobFacade);
     }
-    
+
     @Test(expected = RuntimeException.class)
     public void assertWrongJobExecutorWithSingleItem() throws NoSuchFieldException {
         Map<Integer, String> map = new HashMap<>(1, 1);
         map.put(0, "A");
-        ShardingContexts shardingContexts = new ShardingContexts("fake_task_id", "test_job", 10, "", map);
+        ShardingContexts shardingContexts = new ShardingContexts("fake_task_id", "test_job", 10, "", map, "");
         when(jobFacade.getShardingContexts()).thenReturn(shardingContexts);
         wrongSimpleJobExecutor.execute();
     }
-    
+
     @Test
     public void assertWrongJobExecutorWithMultipleItems() throws NoSuchFieldException {
         Map<Integer, String> map = new HashMap<>(1, 1);
         map.put(0, "A");
         map.put(1, "B");
-        ShardingContexts shardingContexts = new ShardingContexts("fake_task_id", "test_job", 10, "", map);
+        ShardingContexts shardingContexts = new ShardingContexts("fake_task_id", "test_job", 10, "", map, "");
         when(jobFacade.getShardingContexts()).thenReturn(shardingContexts);
         wrongSimpleJobExecutor.execute();
         verify(jobFacade).getShardingContexts();
-        verify(jobFacade).postJobStatusTraceEvent("fake_task_id", State.TASK_RUNNING, "");
+        verify(jobFacade).postJobStatusTraceEvent("fake_task_id", State.TASK_RUNNING, "", "");
     }
 }
