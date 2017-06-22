@@ -213,6 +213,7 @@ public abstract class AbstractElasticJobExecutor {
             // CHECKSTYLE:OFF
         } catch (final Throwable cause) {
             // CHECKSTYLE:ON
+            log.error("NameSpace:{}, Job:{}, Exception:",shardingContexts.getNameSpace(), shardingContexts.getJobName(), cause);
             completeEvent = startEvent.executionFailure(cause);
             jobFacade.postJobExecutionEvent(completeEvent);
             itemErrorMessages.put(item, ExceptionUtil.transform(cause));
