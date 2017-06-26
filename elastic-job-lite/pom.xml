@@ -4,7 +4,7 @@
     <parent>
         <artifactId>elastic-job</artifactId>
         <groupId>com.bbae</groupId>
-        <version>exception20170619-SNAPSHOT</version>
+        <version>1.4</version>
     </parent>
     <packaging>pom</packaging>
     <artifactId>elastic-job-lite</artifactId>
