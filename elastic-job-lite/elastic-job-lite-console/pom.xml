@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.bbae</groupId>
         <artifactId>elastic-job-lite</artifactId>
-        <version>1.3</version>
+        <version>exception20170619-SNAPSHOT</version>
     </parent>
     <artifactId>elastic-job-lite-console</artifactId>
     <packaging>jar</packaging>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.bbae</groupId>
         <artifactId>elastic-job-common</artifactId>
-        <version>1.3</version>
+        <version>exception20170619-SNAPSHOT</version>
     </parent>
     <artifactId>elastic-job-common-core</artifactId>
     <name>${project.artifactId}</name>
