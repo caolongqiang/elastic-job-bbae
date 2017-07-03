@@ -33,14 +33,6 @@ public final class JobShutdownHookPlugin extends ShutdownHookPlugin {
             return;
         }
 
-        ExecutionService
-            executionService = new ExecutionService(regCenter, jobName);
-
-        if(executionService != null && executionService.hasRunningItems()) {
-            log.error("Exception: nameSpace:{}, job:{} 因重启被kill掉", regCenter.getNameSpaceOnly(),
-                jobName);
-        }
-
         LeaderService leaderService = new LeaderService(regCenter, jobName);
         if (leaderService.isLeader()) {
             leaderService.removeLeader();

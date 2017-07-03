@@ -65,8 +65,6 @@ public final class SchedulerFacade {
 
     private ListenerManager listenerManager;
 
-    private ExecutionService executorService;
-
     public SchedulerFacade(final CoordinatorRegistryCenter regCenter, final String jobName) {
         this.jobName = jobName;
         configService = new ConfigurationService(regCenter, jobName);
@@ -76,7 +74,6 @@ public final class SchedulerFacade {
         shardingService = new ShardingService(regCenter, jobName);
         monitorService = new MonitorService(regCenter, jobName);
         reconcileService = new ReconcileService(regCenter, jobName);
-        executorService = new ExecutionService(regCenter, jobName);
     }
 
     public SchedulerFacade(final CoordinatorRegistryCenter regCenter, final String jobName, final List<ElasticJobListener> elasticJobListeners) {
@@ -88,7 +85,6 @@ public final class SchedulerFacade {
         shardingService = new ShardingService(regCenter, jobName);
         monitorService = new MonitorService(regCenter, jobName);
         reconcileService = new ReconcileService(regCenter, jobName);
-        executorService = new ExecutionService(regCenter, jobName);
         listenerManager = new ListenerManager(regCenter, jobName, elasticJobListeners);
     }
 
@@ -130,10 +126,6 @@ public final class SchedulerFacade {
         monitorService.close();
         if (reconcileService.isRunning()) {
             reconcileService.stopAsync();
-        }
-
-        if(executorService.hasRunningItems()){
-            log.error("Exception: nameSpace:{}, job:{} 因重启被kill掉", "" , this.jobName);
         }
         JobRegistry.getInstance().shutdown(jobName);
     }
