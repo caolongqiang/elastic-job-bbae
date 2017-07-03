@@ -2,7 +2,9 @@ package com.dangdang.ddframe.job.lite.internal.schedule;
 
 import com.dangdang.ddframe.job.lite.internal.election.LeaderService;
 import com.dangdang.ddframe.job.lite.internal.instance.InstanceService;
+import com.dangdang.ddframe.job.lite.internal.sharding.ExecutionService;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.plugins.management.ShutdownHookPlugin;
@@ -13,26 +15,37 @@ import org.quartz.spi.ClassLoadHelper;
  *
  * @author zhangliang
  */
+@Slf4j
 public final class JobShutdownHookPlugin extends ShutdownHookPlugin {
-    
+
     private String jobName;
-    
+
     @Override
     public void initialize(final String name, final Scheduler scheduler, final ClassLoadHelper classLoadHelper) throws SchedulerException {
         super.initialize(name, scheduler, classLoadHelper);
         jobName = scheduler.getSchedulerName();
     }
-    
+
     @Override
     public void shutdown() {
         CoordinatorRegistryCenter regCenter = JobRegistry.getInstance().getRegCenter(jobName);
         if (null == regCenter) {
             return;
         }
+
+        ExecutionService
+            executionService = new ExecutionService(regCenter, jobName);
+
+        if(executionService != null && executionService.hasRunningItems()) {
+            log.error("Exception: nameSpace:{}, job:{} 因重启被kill掉", regCenter.getNameSpaceOnly(),
+                jobName);
+        }
+
         LeaderService leaderService = new LeaderService(regCenter, jobName);
         if (leaderService.isLeader()) {
             leaderService.removeLeader();
         }
+
         new InstanceService(regCenter, jobName).removeInstance();
     }
 }
