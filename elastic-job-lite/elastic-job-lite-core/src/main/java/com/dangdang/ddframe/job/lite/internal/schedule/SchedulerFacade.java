@@ -26,36 +26,47 @@ import com.dangdang.ddframe.job.lite.internal.listener.ListenerManager;
 import com.dangdang.ddframe.job.lite.internal.monitor.MonitorService;
 import com.dangdang.ddframe.job.lite.internal.reconcile.ReconcileService;
 import com.dangdang.ddframe.job.lite.internal.server.ServerService;
+import com.dangdang.ddframe.job.lite.internal.sharding.ExecutionService;
 import com.dangdang.ddframe.job.lite.internal.sharding.ShardingService;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * 为调度器提供内部服务的门面类.
- * 
+ *
  * @author zhangliang
  */
+@Slf4j
 public final class SchedulerFacade {
-    
+
     private final String jobName;
-    
+
     private final ConfigurationService configService;
-    
+
     private final LeaderService leaderService;
-    
+
     private final ServerService serverService;
-    
+
     private final InstanceService instanceService;
-    
+
     private final ShardingService shardingService;
-    
+
     private final MonitorService monitorService;
-    
+
     private final ReconcileService reconcileService;
-    
+
     private ListenerManager listenerManager;
-    
+
+    private ExecutionService executorService;
+
     public SchedulerFacade(final CoordinatorRegistryCenter regCenter, final String jobName) {
         this.jobName = jobName;
         configService = new ConfigurationService(regCenter, jobName);
@@ -65,8 +76,9 @@ public final class SchedulerFacade {
         shardingService = new ShardingService(regCenter, jobName);
         monitorService = new MonitorService(regCenter, jobName);
         reconcileService = new ReconcileService(regCenter, jobName);
+        executorService = new ExecutionService(regCenter, jobName);
     }
-    
+
     public SchedulerFacade(final CoordinatorRegistryCenter regCenter, final String jobName, final List<ElasticJobListener> elasticJobListeners) {
         this.jobName = jobName;
         configService = new ConfigurationService(regCenter, jobName);
@@ -76,9 +88,10 @@ public final class SchedulerFacade {
         shardingService = new ShardingService(regCenter, jobName);
         monitorService = new MonitorService(regCenter, jobName);
         reconcileService = new ReconcileService(regCenter, jobName);
+        executorService = new ExecutionService(regCenter, jobName);
         listenerManager = new ListenerManager(regCenter, jobName, elasticJobListeners);
     }
-    
+
     /**
      * 更新作业配置.
      *
@@ -89,10 +102,10 @@ public final class SchedulerFacade {
         configService.persist(liteJobConfig);
         return configService.load(false);
     }
-    
+
     /**
      * 注册作业启动信息.
-     * 
+     *
      * @param enabled 作业是否启用
      */
     public void registerStartUpInfo(final boolean enabled) {
@@ -106,7 +119,7 @@ public final class SchedulerFacade {
             reconcileService.startAsync();
         }
     }
-    
+
     /**
      * 终止作业调度.
      */
@@ -117,6 +130,10 @@ public final class SchedulerFacade {
         monitorService.close();
         if (reconcileService.isRunning()) {
             reconcileService.stopAsync();
+        }
+
+        if(executorService.hasRunningItems()){
+            log.error("Exception: nameSpace:{}, job:{} 因重启被kill掉", "" , this.jobName);
         }
         JobRegistry.getInstance().shutdown(jobName);
     }
