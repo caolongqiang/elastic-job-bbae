@@ -44,18 +44,12 @@ public final class ShutdownListenerManager extends AbstractListenerManager {
 
     private final SchedulerFacade schedulerFacade;
 
-    private final JobNodePath jobNodePath;
-
-    private final ShardingNode shardingNode;
-
     public ShutdownListenerManager(final CoordinatorRegistryCenter regCenter, final String jobName) {
         super(regCenter, jobName);
         this.jobName = jobName;
         instanceNode = new InstanceNode(jobName);
         instanceService = new InstanceService(regCenter, jobName);
         schedulerFacade = new SchedulerFacade(regCenter, jobName);
-        jobNodePath = new JobNodePath(jobName);
-        shardingNode = new ShardingNode(jobName);
     }
 
     @Override
@@ -69,9 +63,6 @@ public final class ShutdownListenerManager extends AbstractListenerManager {
         protected void dataChanged(final String path, final Type eventType, final String data) {
             if (!JobRegistry.getInstance().isShutdown(jobName) && !JobRegistry.getInstance().getJobScheduleController(jobName).isPaused()
                     && isRemoveInstance(path, eventType) && !isReconnectedRegistryCenter()) {
-                if(shardingNode.getItemByRunningItemPath(path) != null){
-                 log.error("运行中的{} 被kill", jobName);
-                }
                 schedulerFacade.shutdownInstance();
             }
         }

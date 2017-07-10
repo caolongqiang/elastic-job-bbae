@@ -27,29 +27,31 @@ import com.dangdang.ddframe.job.lite.internal.sharding.ExecutionService;
 import com.dangdang.ddframe.job.lite.internal.sharding.ShardingNode;
 import com.dangdang.ddframe.job.lite.internal.sharding.ShardingService;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent.Type;
 
 /**
  * 失效转移监听管理器.
- * 
+ *
  * @author zhangliang
  */
+@Slf4j
 public final class FailoverListenerManager extends AbstractListenerManager {
-    
+
     private final ConfigurationService configService;
-    
+
     private final ExecutionService executionService;
-    
+
     private final ShardingService shardingService;
-    
+
     private final FailoverService failoverService;
-    
+
     private final ConfigurationNode configNode;
-    
+
     private final ShardingNode shardingNode;
-    
+
     private final FailoverNode failoverNode;
-    
+
     public FailoverListenerManager(final CoordinatorRegistryCenter regCenter, final String jobName) {
         super(regCenter, jobName);
         configService = new ConfigurationService(regCenter, jobName);
@@ -60,14 +62,14 @@ public final class FailoverListenerManager extends AbstractListenerManager {
         shardingNode = new ShardingNode(jobName);
         failoverNode = new FailoverNode(jobName);
     }
-    
+
     @Override
     public void start() {
         addDataListener(new JobCrashedJobListener());
         addDataListener(new FailoverJobCrashedJobListener());
         addDataListener(new FailoverSettingsChangedJobListener());
     }
-    
+
     private void failover(final Integer item, final Type eventType) {
         if (!isJobCrashAndNeedFailover(item, eventType)) {
             return;
@@ -77,31 +79,36 @@ public final class FailoverListenerManager extends AbstractListenerManager {
             failoverService.failoverIfNecessary();
         }
     }
-    
+
     private boolean isJobCrashAndNeedFailover(final Integer item, final Type eventType) {
         LiteJobConfiguration jobConfig = configService.load(true);
         boolean isFailover = null != jobConfig && jobConfig.isFailover();
         return null != item && Type.NODE_REMOVED == eventType && !executionService.isCompleted(item) && isFailover;
     }
-    
+
     class JobCrashedJobListener extends AbstractJobListener {
-        
+
         @Override
         protected void dataChanged(final String path, final Type eventType, final String data) {
-            failover(shardingNode.getItemByRunningItemPath(path), eventType);
+            Integer item = shardingNode.getItemByRunningItemPath(path);
+            if(item != null) {
+                log.error("JobCrashedJobListener, path:{}, eventType:{}, data:{}", path, eventType,
+                    data);
+                failover(item, eventType);
+            }
         }
     }
-    
+
     class FailoverJobCrashedJobListener extends AbstractJobListener {
-        
+
         @Override
         protected void dataChanged(final String path, final Type eventType, final String data) {
             failover(failoverNode.getItemByExecutionFailoverPath(path), eventType);
         }
     }
-    
+
     class FailoverSettingsChangedJobListener extends AbstractJobListener {
-        
+
         @Override
         protected void dataChanged(final String path, final Type eventType, final String data) {
             if (configNode.isConfigPath(path) && Type.NODE_UPDATED == eventType && !LiteJobConfigurationGsonFactory.fromJson(data).isFailover()) {
