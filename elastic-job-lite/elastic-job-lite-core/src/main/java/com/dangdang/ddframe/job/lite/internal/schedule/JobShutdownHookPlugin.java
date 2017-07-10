@@ -1,8 +1,12 @@
 package com.dangdang.ddframe.job.lite.internal.schedule;
 
+import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
+import com.dangdang.ddframe.job.lite.internal.config.ConfigurationService;
 import com.dangdang.ddframe.job.lite.internal.election.LeaderService;
 import com.dangdang.ddframe.job.lite.internal.instance.InstanceService;
 import com.dangdang.ddframe.job.lite.internal.sharding.ExecutionService;
+import com.dangdang.ddframe.job.lite.internal.sharding.ShardingNode;
+import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
@@ -31,6 +35,18 @@ public final class JobShutdownHookPlugin extends ShutdownHookPlugin {
         CoordinatorRegistryCenter regCenter = JobRegistry.getInstance().getRegCenter(jobName);
         if (null == regCenter) {
             return;
+        }
+
+        ShardingNode shardingNode = new ShardingNode(jobName);
+        JobNodePath jobNodePath = new JobNodePath(jobName);
+
+        ConfigurationService configurationService = new ConfigurationService(regCenter, jobName);
+        LiteJobConfiguration liteJobConfiguration = configurationService.load(true);
+        int count = liteJobConfiguration.getTypeConfig().getCoreConfig().getShardingTotalCount();
+        for(Integer item = 0 ; item < count; item++){
+            if(regCenter.isExisted(jobNodePath.getShardingNodePath(String.valueOf(item), ShardingNode.RUNNING_APPENDIX))){
+                log.error("********************{}-{}**************************", jobName, item);
+            }
         }
 
         LeaderService leaderService = new LeaderService(regCenter, jobName);

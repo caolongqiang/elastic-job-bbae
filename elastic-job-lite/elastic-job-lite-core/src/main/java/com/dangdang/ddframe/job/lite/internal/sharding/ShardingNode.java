@@ -22,48 +22,48 @@ import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 
 /**
  * 分片节点路径.
- * 
+ *
  * @author zhangliang
  */
 public final class ShardingNode {
-    
+
     /**
      * 执行状态根节点.
      */
     public static final String ROOT = "sharding";
-    
+
     static final String INSTANCE_APPENDIX = "instance";
-    
+
     public static final String INSTANCE = ROOT + "/%s/" + INSTANCE_APPENDIX;
-    
-    static final String RUNNING_APPENDIX = "running";
-    
-    static final String RUNNING = ROOT + "/%s/" + RUNNING_APPENDIX;
-    
+
+    public static final String RUNNING_APPENDIX = "running";
+
+    public static final String RUNNING = ROOT + "/%s/" + RUNNING_APPENDIX;
+
     static final String COMPLETED = ROOT + "/%s/completed";
-    
+
     static final String MISFIRE = ROOT + "/%s/misfire";
-    
+
     static final String DISABLED = ROOT + "/%s/disabled";
-    
+
     static final String LEADER_ROOT = LeaderNode.ROOT + "/" + ROOT;
-    
+
     static final String NECESSARY = LEADER_ROOT + "/necessary";
-    
+
     static final String PROCESSING = LEADER_ROOT + "/processing";
-    
+
     static final String CLEANING = LEADER_ROOT + "/cleaning";
-    
+
     private final JobNodePath jobNodePath;
-    
+
     public ShardingNode(final String jobName) {
         jobNodePath = new JobNodePath(jobName);
     }
-    
+
     public static String getInstanceNode(final int item) {
         return String.format(INSTANCE, item);
     }
-    
+
     /**
      * 获取作业运行状态节点路径.
      *
@@ -73,19 +73,19 @@ public final class ShardingNode {
     public static String getRunningNode(final int item) {
         return String.format(RUNNING, item);
     }
-    
+
     static String getCompletedNode(final int item) {
         return String.format(COMPLETED, item);
     }
-    
+
     static String getMisfireNode(final int item) {
         return String.format(MISFIRE, item);
     }
-    
+
     static String getDisabledNode(final int item) {
         return String.format(DISABLED, item);
     }
-    
+
     /**
      * 根据运行中的分片路径获取分片项.
      *
@@ -98,7 +98,7 @@ public final class ShardingNode {
         }
         return Integer.parseInt(path.substring(jobNodePath.getFullPath(ROOT).length() + 1, path.lastIndexOf(RUNNING_APPENDIX) - 1));
     }
-    
+
     private boolean isRunningItemPath(final String path) {
         return path.startsWith(jobNodePath.getFullPath(ROOT)) && path.endsWith(RUNNING_APPENDIX);
     }

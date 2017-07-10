@@ -81,14 +81,9 @@ public final class FailoverListenerManager extends AbstractListenerManager {
     }
 
     private boolean isJobCrashAndNeedFailover(final Integer item, final Type eventType) {
-        if(null != item && Type.NODE_REMOVED == eventType && !executionService.isCompleted(item)){
-            LiteJobConfiguration jobConfig = configService.load(true);
-            log.error("********************job {} 被kill*******************", jobConfig.getJobName());
-            boolean isFailover = null != jobConfig && jobConfig.isFailover();
-            return isFailover;
-        }
-
-        return false;
+        LiteJobConfiguration jobConfig = configService.load(true);
+        boolean isFailover = null != jobConfig && jobConfig.isFailover();
+        return null != item && Type.NODE_REMOVED == eventType && !executionService.isCompleted(item) && isFailover;
     }
 
     class JobCrashedJobListener extends AbstractJobListener {
