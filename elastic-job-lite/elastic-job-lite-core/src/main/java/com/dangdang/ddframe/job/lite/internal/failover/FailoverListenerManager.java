@@ -81,9 +81,14 @@ public final class FailoverListenerManager extends AbstractListenerManager {
     }
 
     private boolean isJobCrashAndNeedFailover(final Integer item, final Type eventType) {
-        LiteJobConfiguration jobConfig = configService.load(true);
-        boolean isFailover = null != jobConfig && jobConfig.isFailover();
-        return null != item && Type.NODE_REMOVED == eventType && !executionService.isCompleted(item) && isFailover;
+        if(null != item && Type.NODE_REMOVED == eventType && !executionService.isCompleted(item)){
+            LiteJobConfiguration jobConfig = configService.load(true);
+            log.error("********************job {} 被kill*******************", jobConfig.getJobName());
+            boolean isFailover = null != jobConfig && jobConfig.isFailover();
+            return isFailover;
+        }
+
+        return false;
     }
 
     class JobCrashedJobListener extends AbstractJobListener {
@@ -91,11 +96,7 @@ public final class FailoverListenerManager extends AbstractListenerManager {
         @Override
         protected void dataChanged(final String path, final Type eventType, final String data) {
             Integer item = shardingNode.getItemByRunningItemPath(path);
-            if(item != null) {
-                log.error("JobCrashedJobListener, path:{}, eventType:{}, data:{}", path, eventType,
-                    data);
-                failover(item, eventType);
-            }
+            failover(item, eventType);
         }
     }
 

@@ -43,7 +43,7 @@ public final class JavaMain {
 
     private static final int EMBED_ZOOKEEPER_PORT = 2181;
 
-    private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:" + EMBED_ZOOKEEPER_PORT;
+    private static final String ZOOKEEPER_CONNECTION_STRING = "172.16.7.116:" + EMBED_ZOOKEEPER_PORT;
 
     private static final String JOB_NAMESPACE = "elastic-job-example-lite-java";
 
@@ -87,7 +87,7 @@ public final class JavaMain {
     }
 
     private static void setUpSimpleJob(final CoordinatorRegistryCenter regCenter, final JobEventConfiguration jobEventConfig) {
-        JobCoreConfiguration coreConfig = JobCoreConfiguration.newBuilder("javaSimpleJob", "0/5 * * * * ?", 3).shardingItemParameters("0=Beijing,1=Shanghai,2=Guangzhou").build();
+        JobCoreConfiguration coreConfig = JobCoreConfiguration.newBuilder("javaSimpleJob", "0/5 * * * * ?", 1).shardingItemParameters("0=Beijing").build();
         SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(coreConfig, JavaSimpleJob.class.getCanonicalName());
         new JobScheduler(regCenter, LiteJobConfiguration.newBuilder(simpleJobConfig).build(), jobEventConfig).init();
     }
