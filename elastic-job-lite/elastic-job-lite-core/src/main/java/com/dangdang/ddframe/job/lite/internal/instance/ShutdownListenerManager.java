@@ -22,6 +22,8 @@ import com.dangdang.ddframe.job.lite.internal.listener.AbstractListenerManager;
 import com.dangdang.ddframe.job.lite.internal.schedule.JobRegistry;
 import com.dangdang.ddframe.job.lite.internal.schedule.SchedulerFacade;
 import com.dangdang.ddframe.job.lite.internal.sharding.ExecutionService;
+import com.dangdang.ddframe.job.lite.internal.sharding.ShardingNode;
+import com.dangdang.ddframe.job.lite.internal.storage.JobNodePath;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent.Type;
@@ -42,7 +44,9 @@ public final class ShutdownListenerManager extends AbstractListenerManager {
 
     private final SchedulerFacade schedulerFacade;
 
-    private final ExecutionService executionService;
+    private final JobNodePath jobNodePath;
+
+    private final ShardingNode shardingNode;
 
     public ShutdownListenerManager(final CoordinatorRegistryCenter regCenter, final String jobName) {
         super(regCenter, jobName);
@@ -50,7 +54,8 @@ public final class ShutdownListenerManager extends AbstractListenerManager {
         instanceNode = new InstanceNode(jobName);
         instanceService = new InstanceService(regCenter, jobName);
         schedulerFacade = new SchedulerFacade(regCenter, jobName);
-        executionService = new ExecutionService(regCenter, jobName);
+        jobNodePath = new JobNodePath(jobName);
+        shardingNode = new ShardingNode(jobName);
     }
 
     @Override
@@ -64,7 +69,9 @@ public final class ShutdownListenerManager extends AbstractListenerManager {
         protected void dataChanged(final String path, final Type eventType, final String data) {
             if (!JobRegistry.getInstance().isShutdown(jobName) && !JobRegistry.getInstance().getJobScheduleController(jobName).isPaused()
                     && isRemoveInstance(path, eventType) && !isReconnectedRegistryCenter()) {
-                log.error("执行中的job被kill,{}", jobName);
+                if(shardingNode.getItemByRunningItemPath(path) != null){
+                 log.error("运行中的{} 被kill", jobName);
+                }
                 schedulerFacade.shutdownInstance();
             }
         }
