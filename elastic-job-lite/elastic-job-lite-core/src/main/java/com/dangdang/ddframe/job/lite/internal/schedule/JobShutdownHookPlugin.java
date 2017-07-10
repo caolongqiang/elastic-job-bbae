@@ -65,7 +65,8 @@ public final class JobShutdownHookPlugin extends ShutdownHookPlugin {
         int count = liteJobConfiguration.getTypeConfig().getCoreConfig().getShardingTotalCount();
         for(Integer item = 0 ; item < count; item++){
             if(regCenter.isExisted(jobNodePath.getShardingNodePath(String.valueOf(item), ShardingNode.RUNNING_APPENDIX))){
-                log.error("********************{}-{}**************************", jobName, item);
+//                log.error("********************{}-{}**************************", jobName, item);
+                log.error("Exception: job:{}-{}-{}, is runing and killed! ", regCenter.getNameSpaceOnly(), jobName, item);
             }
         }
 
