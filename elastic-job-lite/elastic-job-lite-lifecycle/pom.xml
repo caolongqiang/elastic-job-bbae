@@ -4,7 +4,7 @@
     <parent>
         <artifactId>elastic-job-lite</artifactId>
         <groupId>com.bbae</groupId>
-        <version>1.4</version>
+        <version>jobkill20170629-SNAPSHOT</version>
     </parent>
     <artifactId>elastic-job-lite-lifecycle</artifactId>
     <name>${project.artifactId}</name>

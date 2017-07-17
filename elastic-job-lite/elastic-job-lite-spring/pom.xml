@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.bbae</groupId>
         <artifactId>elastic-job-lite</artifactId>
-        <version>1.4</version>
+        <version>jobkill20170629-SNAPSHOT</version>
     </parent>
     <artifactId>elastic-job-lite-spring</artifactId>
     <name>${project.artifactId}</name>
