@@ -37,7 +37,7 @@ public final class JobEventJMonitorListener extends JobEventJMonitorIdentity imp
 
     @Override
     public void listen(final JobExecutionEvent executionEvent) {
-        String key = PREFIX + executionEvent.getNameSpace() + "_" +executionEvent.getJobName();
+        String key = PREFIX + executionEvent.getJobName();
         if (null == executionEvent.getCompleteTime()) {
             // 刚开始, 我就不记了
         } else {
