@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bbae</groupId>
     <artifactId>elastic-job</artifactId>
-    <version>jobkill20170629-SNAPSHOT</version>
+    <version>1.5</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <description>Elastic-Job - distributed scheduled job solution</description>
